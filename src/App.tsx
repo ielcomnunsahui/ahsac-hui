@@ -12,6 +12,8 @@ import SDGs from "./pages/SDGs";
 import Register from "./pages/Register";
 import Feedback from "./pages/Feedback";
 import Auth from "./pages/Auth";
+import MemberLogin from "./pages/MemberLogin";
+import MemberDashboard from "./pages/MemberDashboard";
 import Dashboard from "./pages/admin/Dashboard";
 import Members from "./pages/admin/Members";
 import Faculties from "./pages/admin/Faculties";
@@ -38,6 +40,8 @@ const App = () => (
               <Route path="/register" element={<Register />} />
               <Route path="/feedback" element={<Feedback />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/member-login" element={<MemberLogin />} />
+              <Route path="/member-dashboard" element={<MemberDashboard />} />
               
               {/* Admin Routes */}
               <Route path="/admin" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
