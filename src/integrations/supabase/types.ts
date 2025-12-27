@@ -107,6 +107,7 @@ export type Database = {
           id: string
           matric_number: string
           updated_at: string
+          user_id: string | null
           whatsapp_number: string
         }
         Insert: {
@@ -117,6 +118,7 @@ export type Database = {
           id?: string
           matric_number: string
           updated_at?: string
+          user_id?: string | null
           whatsapp_number: string
         }
         Update: {
@@ -127,6 +129,7 @@ export type Database = {
           id?: string
           matric_number?: string
           updated_at?: string
+          user_id?: string | null
           whatsapp_number?: string
         }
         Relationships: [

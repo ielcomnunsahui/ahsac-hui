@@ -5,23 +5,23 @@ import { ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const sdgGoals = [
-  { number: 1, name: "No Poverty", color: "#E5243B", description: "End poverty in all its forms everywhere." },
-  { number: 2, name: "Zero Hunger", color: "#DDA63A", description: "End hunger, achieve food security and improved nutrition." },
-  { number: 3, name: "Good Health and Well-being", color: "#4C9F38", description: "Ensure healthy lives and promote well-being for all." },
-  { number: 4, name: "Quality Education", color: "#C5192D", description: "Ensure inclusive and equitable quality education." },
-  { number: 5, name: "Gender Equality", color: "#FF3A21", description: "Achieve gender equality and empower all women and girls." },
-  { number: 6, name: "Clean Water and Sanitation", color: "#26BDE2", description: "Ensure availability of water and sanitation for all." },
-  { number: 7, name: "Affordable and Clean Energy", color: "#FCC30B", description: "Ensure access to affordable, reliable, sustainable energy." },
-  { number: 8, name: "Decent Work and Economic Growth", color: "#A21942", description: "Promote sustained, inclusive economic growth." },
-  { number: 9, name: "Industry, Innovation and Infrastructure", color: "#FD6925", description: "Build resilient infrastructure and foster innovation." },
-  { number: 10, name: "Reduced Inequalities", color: "#DD1367", description: "Reduce inequality within and among countries." },
-  { number: 11, name: "Sustainable Cities and Communities", color: "#FD9D24", description: "Make cities inclusive, safe, resilient and sustainable." },
-  { number: 12, name: "Responsible Consumption and Production", color: "#BF8B2E", description: "Ensure sustainable consumption and production patterns." },
-  { number: 13, name: "Climate Action", color: "#3F7E44", description: "Take urgent action to combat climate change." },
-  { number: 14, name: "Life Below Water", color: "#0A97D9", description: "Conserve and sustainably use oceans and marine resources." },
-  { number: 15, name: "Life on Land", color: "#56C02B", description: "Protect, restore and promote sustainable use of ecosystems." },
-  { number: 16, name: "Peace, Justice and Strong Institutions", color: "#00689D", description: "Promote peaceful and inclusive societies." },
-  { number: 17, name: "Partnerships for the Goals", color: "#19486A", description: "Strengthen global partnerships for sustainable development." },
+  { number: 1, name: "No Poverty", color: "#E5243B", description: "End poverty in all its forms everywhere.", icon: "https://sdgs.un.org/sites/default/files/goals/E_SDG_Icons-01.jpg" },
+  { number: 2, name: "Zero Hunger", color: "#DDA63A", description: "End hunger, achieve food security and improved nutrition.", icon: "https://sdgs.un.org/sites/default/files/goals/E_SDG_Icons-02.jpg" },
+  { number: 3, name: "Good Health and Well-being", color: "#4C9F38", description: "Ensure healthy lives and promote well-being for all.", icon: "https://sdgs.un.org/sites/default/files/goals/E_SDG_Icons-03.jpg" },
+  { number: 4, name: "Quality Education", color: "#C5192D", description: "Ensure inclusive and equitable quality education.", icon: "https://sdgs.un.org/sites/default/files/goals/E_SDG_Icons-04.jpg" },
+  { number: 5, name: "Gender Equality", color: "#FF3A21", description: "Achieve gender equality and empower all women and girls.", icon: "https://sdgs.un.org/sites/default/files/goals/E_SDG_Icons-05.jpg" },
+  { number: 6, name: "Clean Water and Sanitation", color: "#26BDE2", description: "Ensure availability of water and sanitation for all.", icon: "https://sdgs.un.org/sites/default/files/goals/E_SDG_Icons-06.jpg" },
+  { number: 7, name: "Affordable and Clean Energy", color: "#FCC30B", description: "Ensure access to affordable, reliable, sustainable energy.", icon: "https://sdgs.un.org/sites/default/files/goals/E_SDG_Icons-07.jpg" },
+  { number: 8, name: "Decent Work and Economic Growth", color: "#A21942", description: "Promote sustained, inclusive economic growth.", icon: "https://sdgs.un.org/sites/default/files/goals/E_SDG_Icons-08.jpg" },
+  { number: 9, name: "Industry, Innovation and Infrastructure", color: "#FD6925", description: "Build resilient infrastructure and foster innovation.", icon: "https://sdgs.un.org/sites/default/files/goals/E_SDG_Icons-09.jpg" },
+  { number: 10, name: "Reduced Inequalities", color: "#DD1367", description: "Reduce inequality within and among countries.", icon: "https://sdgs.un.org/sites/default/files/goals/E_SDG_Icons-10.jpg" },
+  { number: 11, name: "Sustainable Cities and Communities", color: "#FD9D24", description: "Make cities inclusive, safe, resilient and sustainable.", icon: "https://sdgs.un.org/sites/default/files/goals/E_SDG_Icons-11.jpg" },
+  { number: 12, name: "Responsible Consumption and Production", color: "#BF8B2E", description: "Ensure sustainable consumption and production patterns.", icon: "https://sdgs.un.org/sites/default/files/goals/E_SDG_Icons-12.jpg" },
+  { number: 13, name: "Climate Action", color: "#3F7E44", description: "Take urgent action to combat climate change.", icon: "https://sdgs.un.org/sites/default/files/goals/E_SDG_Icons-13.jpg" },
+  { number: 14, name: "Life Below Water", color: "#0A97D9", description: "Conserve and sustainably use oceans and marine resources.", icon: "https://sdgs.un.org/sites/default/files/goals/E_SDG_Icons-14.jpg" },
+  { number: 15, name: "Life on Land", color: "#56C02B", description: "Protect, restore and promote sustainable use of ecosystems.", icon: "https://sdgs.un.org/sites/default/files/goals/E_SDG_Icons-15.jpg" },
+  { number: 16, name: "Peace, Justice and Strong Institutions", color: "#00689D", description: "Promote peaceful and inclusive societies.", icon: "https://sdgs.un.org/sites/default/files/goals/E_SDG_Icons-16.jpg" },
+  { number: 17, name: "Partnerships for the Goals", color: "#19486A", description: "Strengthen global partnerships for sustainable development.", icon: "https://sdgs.un.org/sites/default/files/goals/E_SDG_Icons-17.jpg" },
 ];
 
 const SDGs = () => {
@@ -82,11 +82,14 @@ const SDGs = () => {
                 >
                   <div className="p-6 text-white">
                     <div className="flex items-start justify-between mb-4">
-                      <span className="text-5xl font-display font-bold opacity-90">
-                        {goal.number}
-                      </span>
+                      <img 
+                        src={goal.icon} 
+                        alt={`SDG ${goal.number}: ${goal.name}`}
+                        className="w-16 h-16 rounded-lg object-cover bg-white/10"
+                        loading="lazy"
+                      />
                       <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
-                        <span className="text-lg font-bold">SDG</span>
+                        <span className="text-lg font-bold">{goal.number}</span>
                       </div>
                     </div>
                     <h3 className="text-xl font-display font-bold mb-2">

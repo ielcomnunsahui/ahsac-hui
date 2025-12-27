@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Helmet } from "react-helmet-async";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
@@ -13,8 +13,10 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 import { Plus, Edit, Trash2, Loader2, User } from "lucide-react";
 
 interface FoundingMember {
@@ -26,7 +28,15 @@ interface FoundingMember {
   display_order: number;
 }
 
-const emptyMember: Omit<FoundingMember, 'id'> = {
+interface MemberFormData {
+  name: string;
+  role: string;
+  image_url: string;
+  bio: string;
+  display_order: number;
+}
+
+const emptyMember: MemberFormData = {
   name: '',
   role: '',
   image_url: '',
@@ -37,8 +47,8 @@ const emptyMember: Omit<FoundingMember, 'id'> = {
 const FoundingMembers = () => {
   const [members, setMembers] = useState<FoundingMember[]>([]);
   const [loading, setLoading] = useState(true);
-  const [newMember, setNewMember] = useState(emptyMember);
-  const [editingMember, setEditingMember] = useState<FoundingMember | null>(null);
+  const [formData, setFormData] = useState<MemberFormData>(emptyMember);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -65,25 +75,29 @@ const FoundingMembers = () => {
     }
   };
 
+  const handleInputChange = useCallback((field: keyof MemberFormData, value: string | number) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  }, []);
+
   const handleAdd = async () => {
-    if (!newMember.name.trim() || !newMember.role.trim()) return;
+    if (!formData.name.trim() || !formData.role.trim()) return;
     setIsSaving(true);
 
     try {
       const { error } = await supabase
         .from('founding_members')
         .insert({
-          name: newMember.name,
-          role: newMember.role,
-          image_url: newMember.image_url || null,
-          bio: newMember.bio || null,
-          display_order: newMember.display_order,
+          name: formData.name,
+          role: formData.role,
+          image_url: formData.image_url || null,
+          bio: formData.bio || null,
+          display_order: formData.display_order,
         });
 
       if (error) throw error;
 
       toast({ title: "Success", description: "Founding member added successfully" });
-      setNewMember(emptyMember);
+      setFormData(emptyMember);
       setIsAddDialogOpen(false);
       fetchMembers();
     } catch (error: any) {
@@ -94,26 +108,27 @@ const FoundingMembers = () => {
   };
 
   const handleUpdate = async () => {
-    if (!editingMember) return;
+    if (!editingId) return;
     setIsSaving(true);
 
     try {
       const { error } = await supabase
         .from('founding_members')
         .update({
-          name: editingMember.name,
-          role: editingMember.role,
-          image_url: editingMember.image_url,
-          bio: editingMember.bio,
-          display_order: editingMember.display_order,
+          name: formData.name,
+          role: formData.role,
+          image_url: formData.image_url || null,
+          bio: formData.bio || null,
+          display_order: formData.display_order,
         })
-        .eq('id', editingMember.id);
+        .eq('id', editingId);
 
       if (error) throw error;
 
       toast({ title: "Success", description: "Founding member updated successfully" });
       setIsEditDialogOpen(false);
-      setEditingMember(null);
+      setEditingId(null);
+      setFormData(emptyMember);
       fetchMembers();
     } catch (error: any) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
@@ -136,64 +151,70 @@ const FoundingMembers = () => {
     }
   };
 
-  const MemberForm = ({ 
-    member, 
-    onChange, 
-    onSubmit, 
-    submitLabel 
-  }: { 
-    member: Omit<FoundingMember, 'id'> | FoundingMember; 
-    onChange: (field: string, value: any) => void; 
-    onSubmit: () => void; 
-    submitLabel: string;
-  }) => (
-    <div className="space-y-4 pt-4">
-      <div className="space-y-2">
-        <Label>Name *</Label>
-        <Input
-          value={member.name}
-          onChange={(e) => onChange('name', e.target.value)}
-          placeholder="Full name"
+  const openEditDialog = (member: FoundingMember) => {
+    setEditingId(member.id);
+    setFormData({
+      name: member.name,
+      role: member.role,
+      image_url: member.image_url || '',
+      bio: member.bio || '',
+      display_order: member.display_order,
+    });
+    setIsEditDialogOpen(true);
+  };
+
+  const MemberFormContent = ({ isEdit }: { isEdit: boolean }) => (
+    <ScrollArea className="max-h-[70vh]">
+      <div className="space-y-4 p-1">
+        <ImageUpload
+          currentUrl={formData.image_url}
+          onUpload={(url) => handleInputChange('image_url', url)}
+          folder="founding-members"
+          label="Profile Photo"
         />
+        <div className="space-y-2">
+          <Label>Name *</Label>
+          <Input
+            value={formData.name}
+            onChange={(e) => handleInputChange('name', e.target.value)}
+            placeholder="Full name"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Role *</Label>
+          <Input
+            value={formData.role}
+            onChange={(e) => handleInputChange('role', e.target.value)}
+            placeholder="e.g., President, Secretary"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Bio</Label>
+          <Textarea
+            value={formData.bio}
+            onChange={(e) => handleInputChange('bio', e.target.value)}
+            placeholder="Short biography..."
+            rows={3}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label>Display Order</Label>
+          <Input
+            type="number"
+            value={formData.display_order}
+            onChange={(e) => handleInputChange('display_order', parseInt(e.target.value) || 0)}
+          />
+        </div>
+        <Button 
+          onClick={isEdit ? handleUpdate : handleAdd} 
+          className="w-full" 
+          disabled={isSaving || !formData.name.trim() || !formData.role.trim()}
+        >
+          {isSaving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+          {isEdit ? 'Save Changes' : 'Add Member'}
+        </Button>
       </div>
-      <div className="space-y-2">
-        <Label>Role *</Label>
-        <Input
-          value={member.role}
-          onChange={(e) => onChange('role', e.target.value)}
-          placeholder="e.g., President, Secretary"
-        />
-      </div>
-      <div className="space-y-2">
-        <Label>Image URL</Label>
-        <Input
-          value={member.image_url || ''}
-          onChange={(e) => onChange('image_url', e.target.value)}
-          placeholder="https://example.com/image.jpg"
-        />
-      </div>
-      <div className="space-y-2">
-        <Label>Bio</Label>
-        <Textarea
-          value={member.bio || ''}
-          onChange={(e) => onChange('bio', e.target.value)}
-          placeholder="Short biography..."
-          rows={3}
-        />
-      </div>
-      <div className="space-y-2">
-        <Label>Display Order</Label>
-        <Input
-          type="number"
-          value={member.display_order}
-          onChange={(e) => onChange('display_order', parseInt(e.target.value) || 0)}
-        />
-      </div>
-      <Button onClick={onSubmit} className="w-full" disabled={isSaving}>
-        {isSaving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-        {submitLabel}
-      </Button>
-    </div>
+    </ScrollArea>
   );
 
   return (
@@ -208,23 +229,21 @@ const FoundingMembers = () => {
               <h1 className="text-3xl font-display font-bold">Founding Members</h1>
               <p className="text-muted-foreground">Manage founding members displayed on the website</p>
             </div>
-            <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+            <Dialog open={isAddDialogOpen} onOpenChange={(open) => {
+              setIsAddDialogOpen(open);
+              if (!open) setFormData(emptyMember);
+            }}>
               <DialogTrigger asChild>
                 <Button>
                   <Plus className="h-4 w-4 mr-2" />
                   Add Member
                 </Button>
               </DialogTrigger>
-              <DialogContent>
+              <DialogContent className="max-w-md">
                 <DialogHeader>
                   <DialogTitle>Add Founding Member</DialogTitle>
                 </DialogHeader>
-                <MemberForm
-                  member={newMember}
-                  onChange={(field, value) => setNewMember({ ...newMember, [field]: value })}
-                  onSubmit={handleAdd}
-                  submitLabel="Add Member"
-                />
+                <MemberFormContent isEdit={false} />
               </DialogContent>
             </Dialog>
           </div>
@@ -269,33 +288,13 @@ const FoundingMembers = () => {
                       </p>
                     )}
                     <div className="flex justify-end gap-2">
-                      <Dialog open={isEditDialogOpen && editingMember?.id === member.id} onOpenChange={(open) => {
-                        setIsEditDialogOpen(open);
-                        if (!open) setEditingMember(null);
-                      }}>
-                        <DialogTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setEditingMember(member)}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                          <DialogHeader>
-                            <DialogTitle>Edit Founding Member</DialogTitle>
-                          </DialogHeader>
-                          {editingMember && (
-                            <MemberForm
-                              member={editingMember}
-                              onChange={(field, value) => setEditingMember({ ...editingMember, [field]: value })}
-                              onSubmit={handleUpdate}
-                              submitLabel="Save Changes"
-                            />
-                          )}
-                        </DialogContent>
-                      </Dialog>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => openEditDialog(member)}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
                       <Button
                         variant="ghost"
                         size="sm"
@@ -310,6 +309,22 @@ const FoundingMembers = () => {
               ))}
             </div>
           )}
+
+          {/* Edit Dialog - Separate from the grid to prevent re-renders */}
+          <Dialog open={isEditDialogOpen} onOpenChange={(open) => {
+            setIsEditDialogOpen(open);
+            if (!open) {
+              setEditingId(null);
+              setFormData(emptyMember);
+            }
+          }}>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle>Edit Founding Member</DialogTitle>
+              </DialogHeader>
+              <MemberFormContent isEdit={true} />
+            </DialogContent>
+          </Dialog>
         </div>
       </AdminLayout>
     </>
