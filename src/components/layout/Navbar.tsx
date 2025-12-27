@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 import asacLogo from "@/assets/asac-logo.jpg";
 
 const navLinks = [
@@ -16,6 +17,7 @@ export const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const { user, isLoading } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -79,11 +81,20 @@ export const Navbar = () => {
 
           {/* CTA Button */}
           <div className="hidden md:flex items-center gap-3">
-            <Link to="/register">
-              <Button variant="hero" size="default">
-                Become a Member
-              </Button>
-            </Link>
+            {!isLoading && user ? (
+              <Link to="/member-dashboard">
+                <Button variant="outline" size="default">
+                  <User className="h-4 w-4 mr-2" />
+                  Dashboard
+                </Button>
+              </Link>
+            ) : (
+              <Link to="/register">
+                <Button variant="hero" size="default">
+                  Become a Member
+                </Button>
+              </Link>
+            )}
           </div>
 
           {/* Mobile Menu Toggle */}
@@ -126,11 +137,20 @@ export const Navbar = () => {
                 </Link>
               ))}
               <div className="pt-2">
-                <Link to="/register" className="block">
-                  <Button variant="hero" className="w-full">
-                    Become a Member
-                  </Button>
-                </Link>
+                {!isLoading && user ? (
+                  <Link to="/member-dashboard" className="block">
+                    <Button variant="outline" className="w-full">
+                      <User className="h-4 w-4 mr-2" />
+                      Dashboard
+                    </Button>
+                  </Link>
+                ) : (
+                  <Link to="/register" className="block">
+                    <Button variant="hero" className="w-full">
+                      Become a Member
+                    </Button>
+                  </Link>
+                )}
               </div>
             </div>
           </motion.div>

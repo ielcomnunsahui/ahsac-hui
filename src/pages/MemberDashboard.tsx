@@ -34,6 +34,7 @@ interface MemberData {
   whatsapp_number: string;
   created_at: string;
   faculty_id: string | null;
+  user_id: string | null;
   faculties: { name: string } | null;
 }
 
@@ -61,33 +62,52 @@ const MemberDashboard = () => {
   }, [user]);
 
   const fetchMemberData = async () => {
-    if (!user?.email) return;
+    if (!user) return;
     
     try {
-      // Try to find member by matching email in profiles
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('full_name')
-        .eq('id', user.id)
+      // First try to find member by user_id (direct link)
+      let { data, error } = await supabase
+        .from('members')
+        .select('*, faculties(name)')
+        .eq('user_id', user.id)
         .maybeSingle();
       
-      // Find member by full_name from profile or user metadata
-      const fullName = profile?.full_name || user.user_metadata?.full_name;
-      
-      if (fullName) {
-        const { data, error } = await supabase
-          .from('members')
-          .select('*, faculties(name)')
-          .eq('full_name', fullName)
+      // If not found by user_id, try by full_name from profile or user metadata
+      if (!data) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('full_name')
+          .eq('id', user.id)
           .maybeSingle();
         
-        if (data) {
-          setMemberData(data);
-          setEditData({
-            whatsapp_number: data.whatsapp_number,
-            department: data.department,
-          });
+        const fullName = profile?.full_name || user.user_metadata?.full_name;
+        
+        if (fullName) {
+          const result = await supabase
+            .from('members')
+            .select('*, faculties(name)')
+            .eq('full_name', fullName)
+            .maybeSingle();
+          
+          data = result.data;
+          
+          // If found by name, link the user_id for future lookups
+          if (data && !data.user_id) {
+            await supabase
+              .from('members')
+              .update({ user_id: user.id })
+              .eq('id', data.id);
+            data.user_id = user.id;
+          }
         }
+      }
+      
+      if (data) {
+        setMemberData(data);
+        setEditData({
+          whatsapp_number: data.whatsapp_number,
+          department: data.department,
+        });
       }
     } catch (error) {
       console.error('Error fetching member data:', error);
@@ -266,10 +286,16 @@ const MemberDashboard = () => {
                       </div>
                     ) : (
                       <div className="text-center py-6 text-muted-foreground">
-                        <p className="mb-4">No membership record found for your account.</p>
-                        <Button asChild>
-                          <Link to="/register">Complete Registration</Link>
-                        </Button>
+                        <p className="mb-4">Your membership profile is being set up. This may take a moment after registration.</p>
+                        <div className="space-y-2">
+                          <Button onClick={fetchMemberData} variant="outline">
+                            <Loader2 className="h-4 w-4 mr-2" />
+                            Refresh Profile
+                          </Button>
+                          <p className="text-xs text-muted-foreground">
+                            If this persists, please <Link to="/register" className="text-primary hover:underline">complete registration</Link> or contact an admin.
+                          </p>
+                        </div>
                       </div>
                     )}
                   </CardContent>

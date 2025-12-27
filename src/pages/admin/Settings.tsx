@@ -6,9 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 import { Loader2, Save } from "lucide-react";
 
 interface OrganizationSettings {
@@ -147,17 +147,12 @@ const Settings = () => {
                   onChange={(e) => setSettings({ ...settings, name: e.target.value })}
                 />
               </div>
-              <div className="space-y-2">
-                <Label>Logo URL</Label>
-                <Input
-                  value={settings.logo_url || ''}
-                  onChange={(e) => setSettings({ ...settings, logo_url: e.target.value })}
-                  placeholder="https://example.com/logo.png"
-                />
-                {settings.logo_url && (
-                  <img src={settings.logo_url} alt="Logo preview" className="h-16 w-16 object-cover rounded-lg mt-2" />
-                )}
-              </div>
+              <ImageUpload
+                currentUrl={settings.logo_url}
+                onUpload={(url) => setSettings({ ...settings, logo_url: url })}
+                folder="logo"
+                label="Organization Logo"
+              />
             </CardContent>
           </Card>
 

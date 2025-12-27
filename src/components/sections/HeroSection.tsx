@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, Users, Target, Globe } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 import asacLogo from "@/assets/asac-logo.jpg";
 
 const fadeInUp = {
@@ -18,6 +19,8 @@ const stagger = {
 };
 
 export const HeroSection = () => {
+  const { user, isLoading } = useAuth();
+
   return (
     <section className="relative min-h-[90vh] flex items-center overflow-hidden">
       {/* Background Elements */}
@@ -79,6 +82,15 @@ export const HeroSection = () => {
               Development Goals
             </motion.h1>
 
+            {/* Motto */}
+            <motion.p
+              variants={fadeInUp}
+              transition={{ duration: 0.5, delay: 0.15 }}
+              className="text-xl sm:text-2xl font-display font-semibold text-primary mb-4"
+            >
+              "Voices for Sustainable Future"
+            </motion.p>
+
             <motion.p
               variants={fadeInUp}
               transition={{ duration: 0.5, delay: 0.2 }}
@@ -92,12 +104,21 @@ export const HeroSection = () => {
               transition={{ duration: 0.5, delay: 0.3 }}
               className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
             >
-              <Link to="/register">
-                <Button variant="hero" size="xl" className="w-full sm:w-auto">
-                  Join ASAC Today
-                  <ArrowRight className="h-5 w-5" />
-                </Button>
-              </Link>
+              {!isLoading && user ? (
+                <Link to="/member-dashboard">
+                  <Button variant="hero" size="xl" className="w-full sm:w-auto">
+                    Go to Dashboard
+                    <ArrowRight className="h-5 w-5" />
+                  </Button>
+                </Link>
+              ) : (
+                <Link to="/register">
+                  <Button variant="hero" size="xl" className="w-full sm:w-auto">
+                    Join ASAC Today
+                    <ArrowRight className="h-5 w-5" />
+                  </Button>
+                </Link>
+              )}
               <Link to="/about">
                 <Button variant="hero-outline" size="xl" className="w-full sm:w-auto">
                   Learn More

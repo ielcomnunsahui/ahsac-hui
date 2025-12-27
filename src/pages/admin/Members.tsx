@@ -23,7 +23,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, Edit, Trash2, Download, Copy, Loader2 } from "lucide-react";
+import { Search, Edit, Trash2, Download, Copy, Loader2, Contact } from "lucide-react";
 
 interface Member {
   id: string;
@@ -137,6 +137,46 @@ const Members = () => {
     toast({ title: "Copied", description: "WhatsApp numbers copied to clipboard" });
   };
 
+  const exportVCards = () => {
+    const filteredMembers = searchQuery 
+      ? members.filter(
+          (m) =>
+            m.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            m.matric_number.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            m.department.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      : members;
+
+    const vcards = filteredMembers.map((member) => {
+      const nameParts = member.full_name.split(' ');
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || '';
+      
+      return `BEGIN:VCARD
+VERSION:3.0
+N:${lastName};${firstName};;;
+FN:${member.full_name}
+ORG:ASAC - ${member.faculties?.name || 'Al-Hikmah University'}
+TITLE:${member.department}
+TEL;TYPE=CELL:${member.whatsapp_number}
+NOTE:Matric: ${member.matric_number}\\nDepartment: ${member.department}\\nFaculty: ${member.faculties?.name || 'N/A'}
+END:VCARD`;
+    }).join('\n');
+
+    const blob = new Blob([vcards], { type: 'text/vcard' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `asac_members_${new Date().toISOString().split('T')[0]}.vcf`;
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    toast({ 
+      title: "Exported", 
+      description: `${filteredMembers.length} member vCards exported successfully` 
+    });
+  };
+
   const filteredMembers = members.filter(
     (m) =>
       m.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -154,9 +194,9 @@ const Members = () => {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h1 className="text-3xl font-display font-bold">Members</h1>
-              <p className="text-muted-foreground">Manage registered members</p>
+              <p className="text-muted-foreground">Manage registered members ({members.length} total)</p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Button variant="outline" onClick={copyNumbers}>
                 <Copy className="h-4 w-4 mr-2" />
                 Copy Numbers
@@ -164,6 +204,10 @@ const Members = () => {
               <Button variant="outline" onClick={exportWhatsAppNumbers}>
                 <Download className="h-4 w-4 mr-2" />
                 Export CSV
+              </Button>
+              <Button variant="outline" onClick={exportVCards}>
+                <Contact className="h-4 w-4 mr-2" />
+                Export vCards
               </Button>
             </div>
           </div>

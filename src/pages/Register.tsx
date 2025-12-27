@@ -111,13 +111,14 @@ const Register = () => {
         return;
       }
       
-      // Then, create the member record
+      // Then, create the member record with user_id linked
       const { error: memberError } = await supabase.from('members').insert({
         full_name: data.fullName,
         matric_number: data.matricNumber,
         faculty_id: data.facultyId,
         department: data.department,
         whatsapp_number: data.whatsappNumber,
+        user_id: authData.user?.id || null,
       });
       
       if (memberError) {

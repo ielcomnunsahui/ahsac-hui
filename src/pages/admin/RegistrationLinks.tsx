@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Helmet } from "react-helmet-async";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import {
   Table,
@@ -21,10 +21,15 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { Plus, Copy, Trash2, Loader2, QrCode, Link2 } from "lucide-react";
+import { 
+  Plus, Copy, Trash2, Loader2, QrCode, Link2, RefreshCw, 
+  Share2, MessageCircle, Send, Twitter, Facebook, Download
+} from "lucide-react";
 
 interface RegistrationLink {
   id: string;
@@ -38,9 +43,23 @@ const RegistrationLinks = () => {
   const [loading, setLoading] = useState(true);
   const [newSlug, setNewSlug] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
+  const [selectedLink, setSelectedLink] = useState<RegistrationLink | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
   const { user } = useAuth();
   const { toast } = useToast();
+  const qrCanvasRef = useRef<HTMLDivElement>(null);
+
+  const defaultMessage = `🌍 Join ASAC - Al-Hikmah University SDG Advocacy Club!
+
+Be part of a community championing the 17 UN Sustainable Development Goals.
+
+Register here: {LINK}
+
+#ASAC #SDGs #AlHikmahUniversity`;
+
+  const [shareMessage, setShareMessage] = useState(defaultMessage);
 
   useEffect(() => {
     fetchLinks();
@@ -116,6 +135,30 @@ const RegistrationLinks = () => {
     }
   };
 
+  const handleReset = async (id: string) => {
+    if (!confirm("Are you sure you want to regenerate this link? The old link will stop working.")) return;
+
+    try {
+      const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+      let newSlugValue = '';
+      for (let i = 0; i < 8; i++) {
+        newSlugValue += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+
+      const { error } = await supabase
+        .from('registration_links')
+        .update({ slug: newSlugValue })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast({ title: "Success", description: "Link regenerated successfully" });
+      fetchLinks();
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    }
+  };
+
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this registration link?")) return;
 
@@ -130,16 +173,62 @@ const RegistrationLinks = () => {
     }
   };
 
+  const getFullUrl = (slug: string) => `${window.location.origin}/register?ref=${slug}`;
+
   const copyLink = (slug: string) => {
-    const url = `${window.location.origin}/register?ref=${slug}`;
-    navigator.clipboard.writeText(url);
+    navigator.clipboard.writeText(getFullUrl(slug));
     toast({ title: "Copied", description: "Registration link copied to clipboard" });
   };
 
-  const generateQRCode = (slug: string) => {
-    const url = `${window.location.origin}/register?ref=${slug}`;
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(url)}`;
-    window.open(qrUrl, '_blank');
+  const openQRDialog = (link: RegistrationLink) => {
+    setSelectedLink(link);
+    const url = getFullUrl(link.slug);
+    setQrCodeUrl(`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(url)}`);
+  };
+
+  const downloadQRCode = () => {
+    if (!qrCodeUrl || !selectedLink) return;
+    const a = document.createElement('a');
+    a.href = qrCodeUrl;
+    a.download = `asac-registration-qr-${selectedLink.slug}.png`;
+    a.click();
+    toast({ title: "Downloaded", description: "QR code downloaded successfully" });
+  };
+
+  const openShareDialog = (link: RegistrationLink) => {
+    setSelectedLink(link);
+    setShareMessage(defaultMessage);
+    setIsShareDialogOpen(true);
+  };
+
+  const getFormattedMessage = () => {
+    if (!selectedLink) return shareMessage;
+    return shareMessage.replace('{LINK}', getFullUrl(selectedLink.slug));
+  };
+
+  const shareToWhatsApp = () => {
+    const url = `https://wa.me/?text=${encodeURIComponent(getFormattedMessage())}`;
+    window.open(url, '_blank');
+  };
+
+  const shareToTelegram = () => {
+    const url = `https://t.me/share/url?url=${encodeURIComponent(getFullUrl(selectedLink?.slug || ''))}&text=${encodeURIComponent(shareMessage.replace('{LINK}', ''))}`;
+    window.open(url, '_blank');
+  };
+
+  const shareToTwitter = () => {
+    const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(getFormattedMessage())}`;
+    window.open(url, '_blank');
+  };
+
+  const shareToFacebook = () => {
+    const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(getFullUrl(selectedLink?.slug || ''))}&quote=${encodeURIComponent(shareMessage.replace('{LINK}', ''))}`;
+    window.open(url, '_blank');
+  };
+
+  const copyFormattedMessage = () => {
+    navigator.clipboard.writeText(getFormattedMessage());
+    toast({ title: "Copied", description: "Message copied to clipboard" });
   };
 
   return (
@@ -233,7 +322,7 @@ const RegistrationLinks = () => {
                           {new Date(link.created_at).toLocaleDateString()}
                         </TableCell>
                         <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
+                          <div className="flex justify-end gap-1 flex-wrap">
                             <Button
                               variant="ghost"
                               size="sm"
@@ -242,13 +331,54 @@ const RegistrationLinks = () => {
                             >
                               <Copy className="h-4 w-4" />
                             </Button>
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => openQRDialog(link)}
+                                  title="View QR code"
+                                >
+                                  <QrCode className="h-4 w-4" />
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent>
+                                <DialogHeader>
+                                  <DialogTitle>QR Code for {selectedLink?.slug}</DialogTitle>
+                                </DialogHeader>
+                                <div className="flex flex-col items-center gap-4 py-4">
+                                  {qrCodeUrl && (
+                                    <img 
+                                      src={qrCodeUrl} 
+                                      alt="QR Code" 
+                                      className="w-64 h-64 border rounded-lg"
+                                    />
+                                  )}
+                                  <p className="text-sm text-muted-foreground text-center break-all">
+                                    {selectedLink && getFullUrl(selectedLink.slug)}
+                                  </p>
+                                  <Button onClick={downloadQRCode}>
+                                    <Download className="h-4 w-4 mr-2" />
+                                    Download QR Code
+                                  </Button>
+                                </div>
+                              </DialogContent>
+                            </Dialog>
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => generateQRCode(link.slug)}
-                              title="Generate QR code"
+                              onClick={() => openShareDialog(link)}
+                              title="Share link"
                             >
-                              <QrCode className="h-4 w-4" />
+                              <Share2 className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleReset(link.id)}
+                              title="Regenerate link"
+                            >
+                              <RefreshCw className="h-4 w-4" />
                             </Button>
                             <Button
                               variant="ghost"
@@ -275,6 +405,9 @@ const RegistrationLinks = () => {
                 <Link2 className="h-5 w-5" />
                 Default Registration Link
               </CardTitle>
+              <CardDescription>
+                This link always works and doesn't require a specific slug
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex items-center gap-4">
@@ -305,6 +438,73 @@ const RegistrationLinks = () => {
             </CardContent>
           </Card>
         </div>
+
+        {/* Share Dialog */}
+        <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle>Share Registration Link</DialogTitle>
+            </DialogHeader>
+            <Tabs defaultValue="message" className="w-full">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="message">Custom Message</TabsTrigger>
+                <TabsTrigger value="share">Quick Share</TabsTrigger>
+              </TabsList>
+              <TabsContent value="message" className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Share Message</Label>
+                  <Textarea
+                    value={shareMessage}
+                    onChange={(e) => setShareMessage(e.target.value)}
+                    rows={6}
+                    placeholder="Enter your custom message. Use {LINK} as placeholder for the registration link."
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Use {'{LINK}'} to insert the registration link
+                  </p>
+                </div>
+                <div className="p-3 bg-muted rounded-lg text-sm">
+                  <p className="font-medium mb-2">Preview:</p>
+                  <p className="whitespace-pre-wrap text-muted-foreground">
+                    {getFormattedMessage()}
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <Button onClick={copyFormattedMessage} variant="outline" className="flex-1">
+                    <Copy className="h-4 w-4 mr-2" />
+                    Copy Message
+                  </Button>
+                  <Button onClick={() => setShareMessage(defaultMessage)} variant="ghost">
+                    Reset
+                  </Button>
+                </div>
+              </TabsContent>
+              <TabsContent value="share" className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  Share directly to social media platforms:
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  <Button onClick={shareToWhatsApp} variant="outline" className="gap-2">
+                    <MessageCircle className="h-4 w-4 text-green-500" />
+                    WhatsApp
+                  </Button>
+                  <Button onClick={shareToTelegram} variant="outline" className="gap-2">
+                    <Send className="h-4 w-4 text-blue-500" />
+                    Telegram
+                  </Button>
+                  <Button onClick={shareToTwitter} variant="outline" className="gap-2">
+                    <Twitter className="h-4 w-4 text-sky-500" />
+                    Twitter/X
+                  </Button>
+                  <Button onClick={shareToFacebook} variant="outline" className="gap-2">
+                    <Facebook className="h-4 w-4 text-blue-600" />
+                    Facebook
+                  </Button>
+                </div>
+              </TabsContent>
+            </Tabs>
+          </DialogContent>
+        </Dialog>
       </AdminLayout>
     </>
   );
