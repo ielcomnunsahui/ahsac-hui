@@ -14,6 +14,7 @@ import Feedback from "./pages/Feedback";
 import Auth from "./pages/Auth";
 import MemberLogin from "./pages/MemberLogin";
 import MemberDashboard from "./pages/MemberDashboard";
+import PublicEvents from "./pages/Events";
 import Dashboard from "./pages/admin/Dashboard";
 import Members from "./pages/admin/Members";
 import Faculties from "./pages/admin/Faculties";
@@ -41,6 +42,7 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/about" element={<About />} />
               <Route path="/sdgs" element={<SDGs />} />
+              <Route path="/events" element={<PublicEvents />} />
               <Route path="/register" element={<Register />} />
               <Route path="/feedback" element={<Feedback />} />
               <Route path="/auth" element={<Auth />} />
