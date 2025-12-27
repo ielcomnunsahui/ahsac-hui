@@ -1,28 +1,51 @@
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Quote } from "lucide-react";
+import { Quote, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
-const testimonials = [
-  {
-    quote: "Joining ASAC has been one of the best decisions of my university life. I've learned so much about sustainable development and made lifelong friends.",
-    author: "Aisha Mohammed",
-    role: "Member since 2022",
-    faculty: "Faculty of Sciences",
-  },
-  {
-    quote: "The club's dedication to the SDGs inspired me to start my own environmental initiative on campus. The support from fellow members has been incredible.",
-    author: "Ibrahim Yusuf",
-    role: "Member since 2021",
-    faculty: "Faculty of Engineering",
-  },
-  {
-    quote: "ASAC taught me that small actions can lead to big changes. Every workshop and event has equipped me with knowledge to make a real difference.",
-    author: "Fatima Bakare",
-    role: "Member since 2023",
-    faculty: "Faculty of Management Sciences",
-  },
-];
+interface Testimonial {
+  id: string;
+  name: string;
+  message: string;
+  type: string;
+  created_at: string;
+}
 
 export const TestimonialsSection = () => {
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTestimonials = async () => {
+      const { data } = await supabase
+        .from('feedback')
+        .select('*')
+        .eq('type', 'testimonial')
+        .eq('is_approved', true)
+        .order('created_at', { ascending: false })
+        .limit(6);
+      
+      setTestimonials(data || []);
+      setLoading(false);
+    };
+
+    fetchTestimonials();
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="section-padding bg-secondary/30">
+        <div className="container-custom flex justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </section>
+    );
+  }
+
+  if (testimonials.length === 0) {
+    return null;
+  }
+
   return (
     <section className="section-padding bg-secondary/30">
       <div className="container-custom">
@@ -47,7 +70,7 @@ export const TestimonialsSection = () => {
         <div className="grid md:grid-cols-3 gap-6">
           {testimonials.map((testimonial, index) => (
             <motion.div
-              key={index}
+              key={testimonial.id}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -56,14 +79,13 @@ export const TestimonialsSection = () => {
             >
               <Quote className="h-8 w-8 text-primary/20 mb-4" />
               <p className="text-foreground mb-6 leading-relaxed">
-                "{testimonial.quote}"
+                "{testimonial.message}"
               </p>
               <div className="border-t border-border pt-4">
                 <p className="font-display font-semibold text-foreground">
-                  {testimonial.author}
+                  {testimonial.name}
                 </p>
-                <p className="text-sm text-muted-foreground">{testimonial.role}</p>
-                <p className="text-xs text-primary mt-1">{testimonial.faculty}</p>
+                <p className="text-sm text-muted-foreground">ASAC Member</p>
               </div>
             </motion.div>
           ))}
