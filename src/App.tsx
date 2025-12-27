@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/admin/ProtectedRoute";
+import { ScrollToTop } from "@/components/ScrollToTop";
 import Index from "./pages/Index";
 import About from "./pages/About";
 import SDGs from "./pages/SDGs";
@@ -15,6 +16,7 @@ import Auth from "./pages/Auth";
 import MemberLogin from "./pages/MemberLogin";
 import MemberDashboard from "./pages/MemberDashboard";
 import PublicEvents from "./pages/Events";
+import EventDetails from "./pages/EventDetails";
 import Dashboard from "./pages/admin/Dashboard";
 import Members from "./pages/admin/Members";
 import Faculties from "./pages/admin/Faculties";
@@ -38,11 +40,13 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            <ScrollToTop />
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/about" element={<About />} />
               <Route path="/sdgs" element={<SDGs />} />
               <Route path="/events" element={<PublicEvents />} />
+              <Route path="/events/:id" element={<EventDetails />} />
               <Route path="/register" element={<Register />} />
               <Route path="/feedback" element={<Feedback />} />
               <Route path="/auth" element={<Auth />} />

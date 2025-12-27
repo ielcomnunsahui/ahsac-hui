@@ -1,20 +1,21 @@
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Link } from "react-router-dom";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { format, isPast, isFuture, isToday } from "date-fns";
-import { Calendar, MapPin, Users, Clock, CheckCircle, AlertCircle } from "lucide-react";
+import { Calendar, MapPin, Users, Clock, CheckCircle, AlertCircle, Download, ArrowRight } from "lucide-react";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/useAuth";
+import { downloadICSFile } from "@/lib/calendar";
 
 interface Event {
   id: string;
@@ -28,13 +29,6 @@ interface Event {
   is_published: boolean | null;
 }
 
-interface EventRegistration {
-  event_id: string;
-  name: string;
-  email: string | null;
-  whatsapp_number: string | null;
-}
-
 const EventCard = ({ 
   event, 
   isPastEvent = false,
@@ -44,10 +38,27 @@ const EventCard = ({
   isPastEvent?: boolean;
   onRegister: (event: Event) => void;
 }) => {
+  const { toast } = useToast();
   const startDate = new Date(event.start_date);
   const endDate = event.end_date ? new Date(event.end_date) : null;
   const isEventToday = isToday(startDate);
   const isOngoing = !isPast(startDate) || (endDate && isFuture(endDate));
+
+  const handleAddToCalendar = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    downloadICSFile({
+      title: event.title,
+      description: event.description,
+      location: event.location,
+      startDate: new Date(event.start_date),
+      endDate: event.end_date ? new Date(event.end_date) : null
+    });
+    toast({
+      title: "Calendar file downloaded",
+      description: "Open the .ics file to add to your calendar"
+    });
+  };
 
   return (
     <motion.div
@@ -55,70 +66,91 @@ const EventCard = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
     >
-      <Card className={`hover-lift h-full ${isPastEvent ? 'opacity-80' : ''}`}>
-        <CardHeader>
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-2">
-                {isEventToday && (
-                  <Badge className="bg-accent text-accent-foreground">Today</Badge>
-                )}
-                {isOngoing && !isPastEvent && (
-                  <Badge variant="secondary">Upcoming</Badge>
-                )}
-                {isPastEvent && (
-                  <Badge variant="outline">Completed</Badge>
+      <Link to={`/events/${event.id}`}>
+        <Card className={`hover-lift h-full cursor-pointer ${isPastEvent ? 'opacity-80' : ''}`}>
+          <CardHeader>
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-2">
+                  {isEventToday && (
+                    <Badge className="bg-accent text-accent-foreground">Today</Badge>
+                  )}
+                  {isOngoing && !isPastEvent && (
+                    <Badge variant="secondary">Upcoming</Badge>
+                  )}
+                  {isPastEvent && (
+                    <Badge variant="outline">Completed</Badge>
+                  )}
+                </div>
+                <CardTitle className="text-xl">{event.title}</CardTitle>
+                {event.description && (
+                  <CardDescription className="mt-2 line-clamp-2">
+                    {event.description}
+                  </CardDescription>
                 )}
               </div>
-              <CardTitle className="text-xl">{event.title}</CardTitle>
-              {event.description && (
-                <CardDescription className="mt-2 line-clamp-2">
-                  {event.description}
-                </CardDescription>
+              <div className="text-center p-3 bg-primary/10 rounded-lg min-w-[70px]">
+                <p className="text-2xl font-bold text-primary">{format(startDate, 'd')}</p>
+                <p className="text-xs text-muted-foreground uppercase">{format(startDate, 'MMM')}</p>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4" />
+                <span>{format(startDate, 'EEEE, MMMM d, yyyy • h:mm a')}</span>
+              </div>
+              {event.location && (
+                <div className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4" />
+                  <span>{event.location}</span>
+                </div>
+              )}
+              {event.max_attendees && (
+                <div className="flex items-center gap-2">
+                  <Users className="h-4 w-4" />
+                  <span>Max {event.max_attendees} attendees</span>
+                </div>
               )}
             </div>
-            <div className="text-center p-3 bg-primary/10 rounded-lg min-w-[70px]">
-              <p className="text-2xl font-bold text-primary">{format(startDate, 'd')}</p>
-              <p className="text-xs text-muted-foreground uppercase">{format(startDate, 'MMM')}</p>
+            
+            <div className="flex gap-2">
+              {!isPastEvent && event.registration_required && (
+                <Button 
+                  className="flex-1" 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onRegister(event);
+                  }}
+                >
+                  <Calendar className="h-4 w-4 mr-2" />
+                  Register
+                </Button>
+              )}
+              <Button 
+                variant="outline" 
+                size="icon"
+                onClick={handleAddToCalendar}
+                title="Add to calendar"
+              >
+                <Download className="h-4 w-4" />
+              </Button>
+              <Button variant="ghost" size="icon" asChild>
+                <span>
+                  <ArrowRight className="h-4 w-4" />
+                </span>
+              </Button>
             </div>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2 text-sm text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <Clock className="h-4 w-4" />
-              <span>{format(startDate, 'EEEE, MMMM d, yyyy • h:mm a')}</span>
-            </div>
-            {event.location && (
-              <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4" />
-                <span>{event.location}</span>
-              </div>
+            {!isPastEvent && !event.registration_required && (
+              <p className="text-sm text-muted-foreground text-center">
+                No registration required - Just show up!
+              </p>
             )}
-            {event.max_attendees && (
-              <div className="flex items-center gap-2">
-                <Users className="h-4 w-4" />
-                <span>Max {event.max_attendees} attendees</span>
-              </div>
-            )}
-          </div>
-          
-          {!isPastEvent && event.registration_required && (
-            <Button 
-              className="w-full" 
-              onClick={() => onRegister(event)}
-            >
-              <Calendar className="h-4 w-4 mr-2" />
-              Register for Event
-            </Button>
-          )}
-          {!isPastEvent && !event.registration_required && (
-            <p className="text-sm text-muted-foreground text-center py-2">
-              No registration required - Just show up!
-            </p>
-          )}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </Link>
     </motion.div>
   );
 };
@@ -134,7 +166,6 @@ const RegistrationDialog = ({
   onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
 }) => {
-  const { user } = useAuth();
   const { toast } = useToast();
   const [formData, setFormData] = useState({
     name: '',
