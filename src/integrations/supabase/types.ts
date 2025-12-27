@@ -14,26 +14,295 @@ export type Database = {
   }
   public: {
     Tables: {
-      faculties: {
+      alumni: {
         Row: {
           created_at: string
+          department: string
+          department_id: string | null
+          faculty_id: string | null
+          full_name: string
+          graduation_year: number | null
+          id: string
+          matric_number: string
+          updated_at: string
+          user_id: string | null
+          whatsapp_number: string | null
+        }
+        Insert: {
+          created_at?: string
+          department: string
+          department_id?: string | null
+          faculty_id?: string | null
+          full_name: string
+          graduation_year?: number | null
+          id?: string
+          matric_number: string
+          updated_at?: string
+          user_id?: string | null
+          whatsapp_number?: string | null
+        }
+        Update: {
+          created_at?: string
+          department?: string
+          department_id?: string | null
+          faculty_id?: string | null
+          full_name?: string
+          graduation_year?: number | null
+          id?: string
+          matric_number?: string
+          updated_at?: string
+          user_id?: string | null
+          whatsapp_number?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "alumni_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "alumni_faculty_id_fkey"
+            columns: ["faculty_id"]
+            isOneToOne: false
+            referencedRelation: "faculties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      colleges: {
+        Row: {
+          created_at: string
+          display_order: number | null
           id: string
           name: string
           updated_at: string
         }
         Insert: {
           created_at?: string
+          display_order?: number | null
           id?: string
           name: string
           updated_at?: string
         }
         Update: {
           created_at?: string
+          display_order?: number | null
           id?: string
           name?: string
           updated_at?: string
         }
         Relationships: []
+      }
+      departments: {
+        Row: {
+          created_at: string
+          display_order: number | null
+          faculty_id: string
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number | null
+          faculty_id: string
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number | null
+          faculty_id?: string
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "departments_faculty_id_fkey"
+            columns: ["faculty_id"]
+            isOneToOne: false
+            referencedRelation: "faculties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_attendance: {
+        Row: {
+          checked_in_at: string
+          checked_in_by: string | null
+          event_id: string
+          id: string
+          member_id: string | null
+          registration_id: string | null
+        }
+        Insert: {
+          checked_in_at?: string
+          checked_in_by?: string | null
+          event_id: string
+          id?: string
+          member_id?: string | null
+          registration_id?: string | null
+        }
+        Update: {
+          checked_in_at?: string
+          checked_in_by?: string | null
+          event_id?: string
+          id?: string
+          member_id?: string | null
+          registration_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_attendance_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_attendance_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_attendance_registration_id_fkey"
+            columns: ["registration_id"]
+            isOneToOne: false
+            referencedRelation: "event_registrations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_registrations: {
+        Row: {
+          email: string | null
+          event_id: string
+          id: string
+          member_id: string | null
+          name: string
+          registered_at: string
+          whatsapp_number: string | null
+        }
+        Insert: {
+          email?: string | null
+          event_id: string
+          id?: string
+          member_id?: string | null
+          name: string
+          registered_at?: string
+          whatsapp_number?: string | null
+        }
+        Update: {
+          email?: string | null
+          event_id?: string
+          id?: string
+          member_id?: string | null
+          name?: string
+          registered_at?: string
+          whatsapp_number?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_registrations_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "event_registrations_member_id_fkey"
+            columns: ["member_id"]
+            isOneToOne: false
+            referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      events: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          description: string | null
+          end_date: string | null
+          id: string
+          is_published: boolean | null
+          location: string | null
+          max_attendees: number | null
+          registration_required: boolean | null
+          start_date: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          is_published?: boolean | null
+          location?: string | null
+          max_attendees?: number | null
+          registration_required?: boolean | null
+          start_date: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          is_published?: boolean | null
+          location?: string | null
+          max_attendees?: number | null
+          registration_required?: boolean | null
+          start_date?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      faculties: {
+        Row: {
+          college_id: string | null
+          created_at: string
+          display_order: number | null
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          college_id?: string | null
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          college_id?: string | null
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "faculties_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       feedback: {
         Row: {
@@ -102,9 +371,12 @@ export type Database = {
         Row: {
           created_at: string
           department: string
+          department_id: string | null
+          expected_graduation_year: number | null
           faculty_id: string | null
           full_name: string
           id: string
+          level_of_study: string | null
           matric_number: string
           updated_at: string
           user_id: string | null
@@ -113,9 +385,12 @@ export type Database = {
         Insert: {
           created_at?: string
           department: string
+          department_id?: string | null
+          expected_graduation_year?: number | null
           faculty_id?: string | null
           full_name: string
           id?: string
+          level_of_study?: string | null
           matric_number: string
           updated_at?: string
           user_id?: string | null
@@ -124,15 +399,25 @@ export type Database = {
         Update: {
           created_at?: string
           department?: string
+          department_id?: string | null
+          expected_graduation_year?: number | null
           faculty_id?: string | null
           full_name?: string
           id?: string
+          level_of_study?: string | null
           matric_number?: string
           updated_at?: string
           user_id?: string | null
           whatsapp_number?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "members_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "members_faculty_id_fkey"
             columns: ["faculty_id"]

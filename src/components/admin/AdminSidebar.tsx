@@ -9,7 +9,11 @@ import {
   UserCog,
   LogOut,
   Menu,
-  X
+  X,
+  BarChart3,
+  Building2,
+  UserMinus,
+  Calendar
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -19,8 +23,12 @@ import asacLogo from "@/assets/asac-logo.jpg";
 
 const navItems = [
   { to: "/admin", icon: LayoutDashboard, label: "Dashboard", end: true },
+  { to: "/admin/analytics", icon: BarChart3, label: "Analytics" },
   { to: "/admin/members", icon: Users, label: "Members" },
+  { to: "/admin/colleges", icon: Building2, label: "Colleges" },
   { to: "/admin/faculties", icon: GraduationCap, label: "Faculties" },
+  { to: "/admin/alumni", icon: UserMinus, label: "Alumni" },
+  { to: "/admin/events", icon: Calendar, label: "Events" },
   { to: "/admin/feedback", icon: MessageSquare, label: "Feedback" },
   { to: "/admin/founding-members", icon: UserCog, label: "Founding Members" },
   { to: "/admin/registration-links", icon: Link2, label: "Registration Links" },

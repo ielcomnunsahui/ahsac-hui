@@ -21,6 +21,10 @@ import FeedbackAdmin from "./pages/admin/FeedbackAdmin";
 import FoundingMembers from "./pages/admin/FoundingMembers";
 import RegistrationLinks from "./pages/admin/RegistrationLinks";
 import Settings from "./pages/admin/Settings";
+import Analytics from "./pages/admin/Analytics";
+import Colleges from "./pages/admin/Colleges";
+import Alumni from "./pages/admin/Alumni";
+import Events from "./pages/admin/Events";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -45,8 +49,12 @@ const App = () => (
               
               {/* Admin Routes */}
               <Route path="/admin" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+              <Route path="/admin/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
               <Route path="/admin/members" element={<ProtectedRoute><Members /></ProtectedRoute>} />
+              <Route path="/admin/colleges" element={<ProtectedRoute><Colleges /></ProtectedRoute>} />
               <Route path="/admin/faculties" element={<ProtectedRoute><Faculties /></ProtectedRoute>} />
+              <Route path="/admin/alumni" element={<ProtectedRoute><Alumni /></ProtectedRoute>} />
+              <Route path="/admin/events" element={<ProtectedRoute><Events /></ProtectedRoute>} />
               <Route path="/admin/feedback" element={<ProtectedRoute><FeedbackAdmin /></ProtectedRoute>} />
               <Route path="/admin/founding-members" element={<ProtectedRoute><FoundingMembers /></ProtectedRoute>} />
               <Route path="/admin/registration-links" element={<ProtectedRoute><RegistrationLinks /></ProtectedRoute>} />
