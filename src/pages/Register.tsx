@@ -18,19 +18,33 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { CheckCircle, User, GraduationCap, Phone, Loader2, XCircle, Mail, Lock } from "lucide-react";
+import { CheckCircle, User, GraduationCap, Phone, Loader2, XCircle, Mail, Lock, Building2 } from "lucide-react";
 import asacLogo from "@/assets/asac-logo.jpg";
+
+interface College {
+  id: string;
+  name: string;
+}
 
 interface Faculty {
   id: string;
   name: string;
+  college_id: string | null;
+}
+
+interface Department {
+  id: string;
+  name: string;
+  faculty_id: string;
 }
 
 const registrationSchema = z.object({
   fullName: z.string().min(3, "Full name must be at least 3 characters").max(100),
   matricNumber: z.string().regex(/^[A-Za-z0-9\/]+$/, "Invalid matric number format"),
+  collegeId: z.string().optional(),
   facultyId: z.string().min(1, "Please select a faculty"),
-  department: z.string().min(2, "Department must be at least 2 characters").max(100),
+  departmentId: z.string().min(1, "Please select a department"),
+  levelOfStudy: z.string().min(1, "Please select your level of study"),
   whatsappNumber: z.string().regex(/^\+?[1-9]\d{10,14}$/, "Enter a valid WhatsApp number with country code"),
   email: z.string().email("Please enter a valid email").max(255),
   password: z.string().min(6, "Password must be at least 6 characters").max(128),
@@ -38,29 +52,69 @@ const registrationSchema = z.object({
 
 type RegistrationFormData = z.infer<typeof registrationSchema>;
 
+const LEVELS_OF_STUDY = [
+  { value: "100L", label: "100 Level" },
+  { value: "200L", label: "200 Level" },
+  { value: "300L", label: "300 Level" },
+  { value: "400L", label: "400 Level" },
+  { value: "500L", label: "500 Level" },
+  { value: "600L", label: "600 Level" },
+];
+
+const calculateExpectedGraduationYear = (level: string): number => {
+  const currentYear = new Date().getFullYear();
+  const levelNum = parseInt(level.replace('L', ''));
+  // Assuming 4-year program for most, add years remaining
+  const yearsRemaining = Math.max(1, Math.ceil((400 - levelNum) / 100) + 1);
+  return currentYear + yearsRemaining;
+};
+
 const Register = () => {
   const [searchParams] = useSearchParams();
   const refSlug = searchParams.get('ref');
   
+  const [colleges, setColleges] = useState<College[]>([]);
   const [faculties, setFaculties] = useState<Faculty[]>([]);
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [filteredFaculties, setFilteredFaculties] = useState<Faculty[]>([]);
+  const [filteredDepartments, setFilteredDepartments] = useState<Department[]>([]);
+  const [selectedCollegeId, setSelectedCollegeId] = useState<string>("");
+  const [selectedFacultyId, setSelectedFacultyId] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isValidLink, setIsValidLink] = useState<boolean | null>(null);
   const [checkingLink, setCheckingLink] = useState(true);
   const { toast } = useToast();
 
-  const { register, handleSubmit, setValue, formState: { errors }, reset } = useForm<RegistrationFormData>({
+  const { register, handleSubmit, setValue, watch, formState: { errors }, reset } = useForm<RegistrationFormData>({
     resolver: zodResolver(registrationSchema),
   });
 
+  const watchedLevel = watch("levelOfStudy");
+
   useEffect(() => {
-    // Fetch faculties
-    supabase.from('faculties').select('*').order('name').then(({ data }) => setFaculties(data || []));
+    // Fetch all data
+    const fetchData = async () => {
+      const [collegesRes, facultiesRes, departmentsRes] = await Promise.all([
+        supabase.from('colleges').select('*').order('display_order'),
+        supabase.from('faculties').select('*').order('display_order'),
+        supabase.from('departments').select('*').order('display_order'),
+      ]);
+      
+      setColleges(collegesRes.data || []);
+      setFaculties(facultiesRes.data || []);
+      setDepartments(departmentsRes.data || []);
+      
+      // Initially show faculties without college (direct faculties)
+      const directFaculties = (facultiesRes.data || []).filter(f => !f.college_id);
+      setFilteredFaculties(facultiesRes.data || []);
+    };
+    
+    fetchData();
     
     // Validate registration link if ref is provided
     const validateLink = async () => {
       if (!refSlug) {
-        // No ref slug = direct access, always allow
         setIsValidLink(true);
         setCheckingLink(false);
         return;
@@ -83,11 +137,42 @@ const Register = () => {
     validateLink();
   }, [refSlug]);
 
+  // Filter faculties when college changes
+  useEffect(() => {
+    if (selectedCollegeId) {
+      const filtered = faculties.filter(f => f.college_id === selectedCollegeId);
+      setFilteredFaculties(filtered);
+    } else {
+      // Show all faculties when no college selected
+      setFilteredFaculties(faculties);
+    }
+    // Reset faculty and department when college changes
+    setSelectedFacultyId("");
+    setValue("facultyId", "");
+    setValue("departmentId", "");
+    setFilteredDepartments([]);
+  }, [selectedCollegeId, faculties, setValue]);
+
+  // Filter departments when faculty changes
+  useEffect(() => {
+    if (selectedFacultyId) {
+      const filtered = departments.filter(d => d.faculty_id === selectedFacultyId);
+      setFilteredDepartments(filtered);
+    } else {
+      setFilteredDepartments([]);
+    }
+    setValue("departmentId", "");
+  }, [selectedFacultyId, departments, setValue]);
+
   const onSubmit = async (data: RegistrationFormData) => {
     setIsSubmitting(true);
     
     try {
-      // First, create the user account
+      // Get department name for the department field
+      const selectedDept = departments.find(d => d.id === data.departmentId);
+      const expectedGradYear = calculateExpectedGraduationYear(data.levelOfStudy);
+      
+      // Create the user account WITHOUT email confirmation
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
@@ -111,14 +196,17 @@ const Register = () => {
         return;
       }
       
-      // Then, create the member record with user_id linked
+      // Create the member record
       const { error: memberError } = await supabase.from('members').insert({
         full_name: data.fullName,
         matric_number: data.matricNumber,
         faculty_id: data.facultyId,
-        department: data.department,
+        department_id: data.departmentId,
+        department: selectedDept?.name || '',
         whatsapp_number: data.whatsappNumber,
         user_id: authData.user?.id || null,
+        level_of_study: data.levelOfStudy,
+        expected_graduation_year: expectedGradYear,
       });
       
       if (memberError) {
@@ -134,7 +222,7 @@ const Register = () => {
       }
       
       setIsSuccess(true);
-      toast({ title: "Registration Successful!", description: "Welcome to ASAC! Please check your email to verify your account." });
+      toast({ title: "Registration Successful!", description: "Welcome to ASAC! You can now log in to your dashboard." });
       reset();
     } catch (error: any) {
       toast({
@@ -190,10 +278,10 @@ const Register = () => {
                 <CheckCircle className="h-10 w-10 text-sdg-green" />
               </div>
               <h1 className="text-3xl font-display font-bold mb-4">Welcome to ASAC!</h1>
-              <p className="text-muted-foreground mb-8">Your registration has been received. Please check your email to verify your account, then you can access your member dashboard.</p>
+              <p className="text-muted-foreground mb-8">Your registration is complete. You can now log in to access your member dashboard.</p>
               <div className="space-y-4">
                 <Button variant="hero" asChild>
-                  <Link to="/member-dashboard">Go to Dashboard</Link>
+                  <Link to="/member-login">Log In</Link>
                 </Button>
                 <Button variant="outline" onClick={() => setIsSuccess(false)}>Register Another Member</Button>
               </div>
@@ -227,7 +315,7 @@ const Register = () => {
               <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.2 }}>
                 <form onSubmit={handleSubmit(onSubmit)} className="p-6 sm:p-8 rounded-2xl bg-card border border-border shadow-lg">
                   <h2 className="text-2xl font-display font-bold mb-6">Registration Form</h2>
-                  <div className="space-y-6">
+                  <div className="space-y-5">
                     <div className="space-y-2">
                       <Label htmlFor="fullName" className="flex items-center gap-2"><User className="h-4 w-4" />Full Name</Label>
                       <Input id="fullName" placeholder="Enter your full name" {...register("fullName")} className={errors.fullName ? "border-destructive" : ""} />
@@ -251,20 +339,74 @@ const Register = () => {
                       <Input id="matricNumber" placeholder="e.g., 20/25SC001" {...register("matricNumber")} className={errors.matricNumber ? "border-destructive" : ""} />
                       {errors.matricNumber && <p className="text-sm text-destructive">{errors.matricNumber.message}</p>}
                     </div>
+
+                    {/* College Selection (Optional) */}
+                    <div className="space-y-2">
+                      <Label className="flex items-center gap-2"><Building2 className="h-4 w-4" />College (Optional)</Label>
+                      <Select 
+                        value={selectedCollegeId} 
+                        onValueChange={(value) => {
+                          setSelectedCollegeId(value === "none" ? "" : value);
+                          setValue("collegeId", value === "none" ? "" : value);
+                        }}
+                      >
+                        <SelectTrigger><SelectValue placeholder="Select college (if applicable)" /></SelectTrigger>
+                        <SelectContent className="bg-card">
+                          <SelectItem value="none">No College / Direct Faculty</SelectItem>
+                          {colleges.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                      <p className="text-xs text-muted-foreground">Select if you're in a college like Health Sciences</p>
+                    </div>
                     
+                    {/* Faculty Selection */}
                     <div className="space-y-2">
                       <Label>Faculty</Label>
-                      <Select onValueChange={(value) => setValue("facultyId", value)}>
+                      <Select 
+                        value={selectedFacultyId}
+                        onValueChange={(value) => {
+                          setSelectedFacultyId(value);
+                          setValue("facultyId", value);
+                        }}
+                      >
                         <SelectTrigger className={errors.facultyId ? "border-destructive" : ""}><SelectValue placeholder="Select your faculty" /></SelectTrigger>
-                        <SelectContent className="bg-card">{faculties.map((f) => <SelectItem key={f.id} value={f.id}>{f.name}</SelectItem>)}</SelectContent>
+                        <SelectContent className="bg-card">
+                          {filteredFaculties.map((f) => <SelectItem key={f.id} value={f.id}>{f.name}</SelectItem>)}
+                        </SelectContent>
                       </Select>
                       {errors.facultyId && <p className="text-sm text-destructive">{errors.facultyId.message}</p>}
                     </div>
-                    
+
+                    {/* Department Selection */}
                     <div className="space-y-2">
-                      <Label htmlFor="department">Department</Label>
-                      <Input id="department" placeholder="e.g., Computer Science" {...register("department")} className={errors.department ? "border-destructive" : ""} />
-                      {errors.department && <p className="text-sm text-destructive">{errors.department.message}</p>}
+                      <Label>Department</Label>
+                      <Select 
+                        onValueChange={(value) => setValue("departmentId", value)}
+                        disabled={!selectedFacultyId || filteredDepartments.length === 0}
+                      >
+                        <SelectTrigger className={errors.departmentId ? "border-destructive" : ""}>
+                          <SelectValue placeholder={!selectedFacultyId ? "Select faculty first" : filteredDepartments.length === 0 ? "No departments available" : "Select your department"} />
+                        </SelectTrigger>
+                        <SelectContent className="bg-card">
+                          {filteredDepartments.map((d) => <SelectItem key={d.id} value={d.id}>{d.name}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                      {errors.departmentId && <p className="text-sm text-destructive">{errors.departmentId.message}</p>}
+                    </div>
+
+                    {/* Level of Study */}
+                    <div className="space-y-2">
+                      <Label className="flex items-center gap-2"><GraduationCap className="h-4 w-4" />Level of Study</Label>
+                      <Select onValueChange={(value) => setValue("levelOfStudy", value)}>
+                        <SelectTrigger className={errors.levelOfStudy ? "border-destructive" : ""}><SelectValue placeholder="Select your level" /></SelectTrigger>
+                        <SelectContent className="bg-card">
+                          {LEVELS_OF_STUDY.map((level) => <SelectItem key={level.value} value={level.value}>{level.label}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                      {errors.levelOfStudy && <p className="text-sm text-destructive">{errors.levelOfStudy.message}</p>}
+                      {watchedLevel && (
+                        <p className="text-xs text-muted-foreground">Expected graduation: {calculateExpectedGraduationYear(watchedLevel)}</p>
+                      )}
                     </div>
                     
                     <div className="space-y-2">

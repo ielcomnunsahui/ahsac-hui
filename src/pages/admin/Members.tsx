@@ -21,9 +21,10 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, Edit, Trash2, Download, Copy, Loader2, Contact } from "lucide-react";
+import { Search, Edit, Trash2, Download, Copy, Loader2, Contact, GraduationCap, UserMinus } from "lucide-react";
 
 interface Member {
   id: string;
@@ -31,9 +32,14 @@ interface Member {
   matric_number: string;
   faculty_id: string | null;
   department: string;
+  department_id: string | null;
   whatsapp_number: string;
   created_at: string;
+  level_of_study: string | null;
+  expected_graduation_year: number | null;
+  user_id: string | null;
   faculties: { name: string } | null;
+  departments: { name: string } | null;
 }
 
 interface Faculty {
@@ -41,26 +47,44 @@ interface Faculty {
   name: string;
 }
 
+interface Department {
+  id: string;
+  name: string;
+  faculty_id: string;
+}
+
+const LEVELS_OF_STUDY = [
+  { value: "100L", label: "100 Level" },
+  { value: "200L", label: "200 Level" },
+  { value: "300L", label: "300 Level" },
+  { value: "400L", label: "400 Level" },
+  { value: "500L", label: "500 Level" },
+  { value: "600L", label: "600 Level" },
+];
+
 const Members = () => {
   const [members, setMembers] = useState<Member[]>([]);
   const [faculties, setFaculties] = useState<Faculty[]>([]);
+  const [departments, setDepartments] = useState<Department[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [editingMember, setEditingMember] = useState<Member | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [filteredDepartments, setFilteredDepartments] = useState<Department[]>([]);
   const { toast } = useToast();
 
   useEffect(() => {
     fetchMembers();
     fetchFaculties();
+    fetchDepartments();
   }, []);
 
   const fetchMembers = async () => {
     try {
       const { data, error } = await supabase
         .from('members')
-        .select('*, faculties(name)')
+        .select('*, faculties(name), departments(name)')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -78,19 +102,37 @@ const Members = () => {
     setFaculties(data || []);
   };
 
+  const fetchDepartments = async () => {
+    const { data } = await supabase.from('departments').select('*').order('name');
+    setDepartments(data || []);
+  };
+
+  // Filter departments when faculty changes in edit dialog
+  useEffect(() => {
+    if (editingMember?.faculty_id) {
+      setFilteredDepartments(departments.filter(d => d.faculty_id === editingMember.faculty_id));
+    } else {
+      setFilteredDepartments([]);
+    }
+  }, [editingMember?.faculty_id, departments]);
+
   const handleUpdate = async () => {
     if (!editingMember) return;
     setIsSaving(true);
 
     try {
+      const selectedDept = departments.find(d => d.id === editingMember.department_id);
       const { error } = await supabase
         .from('members')
         .update({
           full_name: editingMember.full_name,
           matric_number: editingMember.matric_number,
           faculty_id: editingMember.faculty_id,
-          department: editingMember.department,
+          department_id: editingMember.department_id,
+          department: selectedDept?.name || editingMember.department,
           whatsapp_number: editingMember.whatsapp_number,
+          level_of_study: editingMember.level_of_study,
+          expected_graduation_year: editingMember.expected_graduation_year,
         })
         .eq('id', editingMember.id);
 
@@ -114,6 +156,35 @@ const Members = () => {
       if (error) throw error;
 
       toast({ title: "Success", description: "Member deleted successfully" });
+      fetchMembers();
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    }
+  };
+
+  const handleGraduateToAlumni = async (member: Member) => {
+    if (!confirm(`Move ${member.full_name} to alumni?`)) return;
+
+    try {
+      // Insert into alumni
+      const { error: alumniError } = await supabase.from('alumni').insert({
+        full_name: member.full_name,
+        matric_number: member.matric_number,
+        faculty_id: member.faculty_id,
+        department_id: member.department_id,
+        department: member.department,
+        whatsapp_number: member.whatsapp_number,
+        graduation_year: member.expected_graduation_year || new Date().getFullYear(),
+        user_id: member.user_id,
+      });
+
+      if (alumniError) throw alumniError;
+
+      // Delete from members
+      const { error: deleteError } = await supabase.from('members').delete().eq('id', member.id);
+      if (deleteError) throw deleteError;
+
+      toast({ title: "Success", description: `${member.full_name} moved to alumni` });
       fetchMembers();
     } catch (error: any) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
@@ -159,7 +230,7 @@ FN:${member.full_name}
 ORG:ASAC - ${member.faculties?.name || 'Al-Hikmah University'}
 TITLE:${member.department}
 TEL;TYPE=CELL:${member.whatsapp_number}
-NOTE:Matric: ${member.matric_number}\\nDepartment: ${member.department}\\nFaculty: ${member.faculties?.name || 'N/A'}
+NOTE:Matric: ${member.matric_number}\\nDepartment: ${member.department}\\nFaculty: ${member.faculties?.name || 'N/A'}\\nLevel: ${member.level_of_study || 'N/A'}\\nExpected Graduation: ${member.expected_graduation_year || 'N/A'}
 END:VCARD`;
     }).join('\n');
 
@@ -177,6 +248,7 @@ END:VCARD`;
     });
   };
 
+  const currentYear = new Date().getFullYear();
   const filteredMembers = members.filter(
     (m) =>
       m.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -240,6 +312,8 @@ END:VCARD`;
                         <TableHead>Matric No.</TableHead>
                         <TableHead>Faculty</TableHead>
                         <TableHead>Department</TableHead>
+                        <TableHead>Level</TableHead>
+                        <TableHead>Grad Year</TableHead>
                         <TableHead>WhatsApp</TableHead>
                         <TableHead>Joined</TableHead>
                         <TableHead className="text-right">Actions</TableHead>
@@ -248,7 +322,7 @@ END:VCARD`;
                     <TableBody>
                       {filteredMembers.length === 0 ? (
                         <TableRow>
-                          <TableCell colSpan={7} className="text-center text-muted-foreground">
+                          <TableCell colSpan={9} className="text-center text-muted-foreground">
                             No members found
                           </TableCell>
                         </TableRow>
@@ -258,13 +332,36 @@ END:VCARD`;
                             <TableCell className="font-medium">{member.full_name}</TableCell>
                             <TableCell>{member.matric_number}</TableCell>
                             <TableCell>{member.faculties?.name || '-'}</TableCell>
-                            <TableCell>{member.department}</TableCell>
+                            <TableCell>{member.departments?.name || member.department}</TableCell>
+                            <TableCell>
+                              {member.level_of_study ? (
+                                <Badge variant="secondary">{member.level_of_study}</Badge>
+                              ) : '-'}
+                            </TableCell>
+                            <TableCell>
+                              {member.expected_graduation_year ? (
+                                <Badge variant={member.expected_graduation_year <= currentYear ? "destructive" : "outline"}>
+                                  {member.expected_graduation_year}
+                                </Badge>
+                              ) : '-'}
+                            </TableCell>
                             <TableCell>{member.whatsapp_number}</TableCell>
                             <TableCell>
                               {new Date(member.created_at).toLocaleDateString()}
                             </TableCell>
                             <TableCell className="text-right">
-                              <div className="flex justify-end gap-2">
+                              <div className="flex justify-end gap-1">
+                                {member.expected_graduation_year && member.expected_graduation_year <= currentYear && (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => handleGraduateToAlumni(member)}
+                                    title="Move to Alumni"
+                                    className="text-primary hover:text-primary"
+                                  >
+                                    <GraduationCap className="h-4 w-4" />
+                                  </Button>
+                                )}
                                 <Dialog open={isDialogOpen && editingMember?.id === member.id} onOpenChange={(open) => {
                                   setIsDialogOpen(open);
                                   if (!open) setEditingMember(null);
@@ -278,7 +375,7 @@ END:VCARD`;
                                       <Edit className="h-4 w-4" />
                                     </Button>
                                   </DialogTrigger>
-                                  <DialogContent>
+                                  <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
                                     <DialogHeader>
                                       <DialogTitle>Edit Member</DialogTitle>
                                     </DialogHeader>
@@ -307,7 +404,7 @@ END:VCARD`;
                                           <Select
                                             value={editingMember.faculty_id || ''}
                                             onValueChange={(value) =>
-                                              setEditingMember({ ...editingMember, faculty_id: value })
+                                              setEditingMember({ ...editingMember, faculty_id: value, department_id: null })
                                             }
                                           >
                                             <SelectTrigger>
@@ -324,10 +421,51 @@ END:VCARD`;
                                         </div>
                                         <div className="space-y-2">
                                           <Label>Department</Label>
+                                          <Select
+                                            value={editingMember.department_id || ''}
+                                            onValueChange={(value) =>
+                                              setEditingMember({ ...editingMember, department_id: value })
+                                            }
+                                          >
+                                            <SelectTrigger>
+                                              <SelectValue placeholder="Select department" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                              {filteredDepartments.map((d) => (
+                                                <SelectItem key={d.id} value={d.id}>
+                                                  {d.name}
+                                                </SelectItem>
+                                              ))}
+                                            </SelectContent>
+                                          </Select>
+                                        </div>
+                                        <div className="space-y-2">
+                                          <Label>Level of Study</Label>
+                                          <Select
+                                            value={editingMember.level_of_study || ''}
+                                            onValueChange={(value) =>
+                                              setEditingMember({ ...editingMember, level_of_study: value })
+                                            }
+                                          >
+                                            <SelectTrigger>
+                                              <SelectValue placeholder="Select level" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                              {LEVELS_OF_STUDY.map((level) => (
+                                                <SelectItem key={level.value} value={level.value}>
+                                                  {level.label}
+                                                </SelectItem>
+                                              ))}
+                                            </SelectContent>
+                                          </Select>
+                                        </div>
+                                        <div className="space-y-2">
+                                          <Label>Expected Graduation Year</Label>
                                           <Input
-                                            value={editingMember.department}
+                                            type="number"
+                                            value={editingMember.expected_graduation_year || ''}
                                             onChange={(e) =>
-                                              setEditingMember({ ...editingMember, department: e.target.value })
+                                              setEditingMember({ ...editingMember, expected_graduation_year: parseInt(e.target.value) || null })
                                             }
                                           />
                                         </div>
