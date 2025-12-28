@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Layout } from "@/components/layout/Layout";
 import { BookOpen, Download, ExternalLink, Globe, Users, Target, Lightbulb, FileText, Link as LinkIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 const resources = [
@@ -11,7 +12,7 @@ const resources = [
     description: "Comprehensive guide on taking action for the Sustainable Development Goals",
     category: "Guide",
     icon: BookOpen,
-    url: "https://www.un.org/sustainabledevelopment/sdg-action-guide/",
+    url: "https://sdgs.un.org/partnerships",
     color: "bg-sdg-blue"
   },
   {
@@ -19,7 +20,7 @@ const resources = [
     description: "Official UN platform for SDG knowledge sharing and resources",
     category: "Platform",
     icon: Globe,
-    url: "https://sustainabledevelopment.un.org/knowledgeplatform",
+    url: "https://www.un.org/sustainabledevelopment/sdg-fast-facts/",
     color: "bg-sdg-green"
   },
   {
@@ -27,7 +28,7 @@ const resources = [
     description: "Official indicators for tracking SDG progress",
     category: "Data",
     icon: Target,
-    url: "https://unstats.un.org/sdgs/indicators/",
+    url: "https://unstats.un.org/sdgs",
     color: "bg-sdg-gold"
   },
   {
@@ -35,7 +36,7 @@ const resources = [
     description: "Real-world examples of SDG implementation",
     category: "Case Study",
     icon: FileText,
-    url: "https://www.un.org/sustainabledevelopment/case-studies/",
+    url: "https://sdgs.un.org/gsdr",
     color: "bg-sdg-red"
   },
   {
@@ -43,15 +44,15 @@ const resources = [
     description: "Connect with other SDG advocates and practitioners",
     category: "Community",
     icon: Users,
-    url: "https://www.un.org/sustainabledevelopment/sdg-action-community/",
+    url: "https://unpartnerships.un.org/un-sdg-advocates?_gl=1*1jdn1jr*_ga*MTg1ODg0OTE1LjE3NjY5MjUzNzk.*_ga_TK9BQL5X7Z*czE3NjY5MjUzNzkkbzEkZzEkdDE3NjY5MjYxMzYkajYwJGwwJGgw",
     color: "bg-sdg-teal"
   },
   {
-    title: "Innovation for SDGs",
-    description: "Innovative solutions and technologies for SDG achievement",
-    category: "Innovation",
+    title: "SDGs Circle of Supporters",
+    description: "Organizations supporting the SDGs",
+    category: "Supporters",
     icon: Lightbulb,
-    url: "https://www.un.org/sustainabledevelopment/innovation-for-sdgs/",
+    url: "https://www.un.org/sustainabledevelopment/sdg-circle-of-supporters",
     color: "bg-sdg-purple"
   }
 ];
@@ -75,7 +76,7 @@ const additionalResources = [
   {
     title: "SDG Action Materials",
     description: "Downloadable materials for SDG campaigns",
-    url: "https://www.un.org/sustainabledevelopment/sdg-action-materials/"
+    url: "https://www.un.org/sustainabledevelopment/news/communications-material/"
   }
 ];
 

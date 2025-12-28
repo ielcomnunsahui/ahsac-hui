@@ -29,6 +29,11 @@ interface Event {
   is_published: boolean | null;
 }
 
+interface RegistrationError {
+  message: string;
+  code?: string;
+}
+
 const EventCard = ({ 
   event, 
   isPastEvent = false,
@@ -138,9 +143,9 @@ const EventCard = ({
                 <Download className="h-4 w-4" />
               </Button>
               <Button variant="ghost" size="icon" asChild>
-                <span>
+                <Link to={`/events/${event.id}`}>
                   <ArrowRight className="h-4 w-4" />
-                </span>
+                </Link>
               </Button>
             </div>
             {!isPastEvent && !event.registration_required && (
@@ -155,7 +160,7 @@ const EventCard = ({
   );
 };
 
-const RegistrationDialog = { 
+const RegistrationDialog = ({ 
   event, 
   open, 
   onOpenChange,
@@ -216,10 +221,11 @@ const RegistrationDialog = {
         onSuccess();
         onOpenChange(false);
       }
-    } catch (error: any) {
+    } catch (error) {
+      const typedError = error as RegistrationError;
       toast({
         title: "Registration Failed",
-        description: error.message || "Something went wrong. Please try again.",
+        description: typedError.message || "Something went wrong. Please try again.",
         variant: "destructive"
       });
     } finally {

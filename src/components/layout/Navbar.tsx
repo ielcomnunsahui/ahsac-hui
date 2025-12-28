@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, User } from "lucide-react";
+import { Menu, X, User, BookOpen, Users, Calendar, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import asacLogo from "@/assets/asac-logo.jpg";
@@ -11,6 +11,9 @@ const navLinks = [
   { href: "/about", label: "About" },
   { href: "/sdgs", label: "SDGs" },
   { href: "/events", label: "Events" },
+  { href: "/resources", label: "Resources" },
+  { href: "/team", label: "Team" },
+  { href: "/contact", label: "Contact" },
   { href: "/register", label: "Join Us" },
 ];
 
@@ -69,7 +72,7 @@ export const Navbar = () => {
               <Link
                 key={link.href}
                 to={link.href}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                   location.pathname === link.href
                     ? "text-primary bg-primary/10"
                     : "text-muted-foreground hover:text-foreground hover:bg-muted"
@@ -92,7 +95,7 @@ export const Navbar = () => {
             ) : (
               <Link to="/register">
                 <Button variant="hero" size="default">
-                  Become a Member
+                  Join Us
                 </Button>
               </Link>
             )}
@@ -148,7 +151,7 @@ export const Navbar = () => {
                 ) : (
                   <Link to="/register" className="block">
                     <Button variant="hero" className="w-full">
-                      Become a Member
+                      Join Us
                     </Button>
                   </Link>
                 )}

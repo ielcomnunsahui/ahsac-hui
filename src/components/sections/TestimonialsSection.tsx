@@ -55,7 +55,7 @@ export const TestimonialsSection = () => {
       const { data } = await supabase
         .from('feedback')
         .select('*')
-        .eq('type', 'testimonial')
+        //.eq('type', 'testimonial')//
         .eq('is_approved', true)
         .order('created_at', { ascending: false })
         .limit(12);

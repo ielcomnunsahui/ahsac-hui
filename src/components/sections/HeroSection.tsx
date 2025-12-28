@@ -3,6 +3,8 @@ import { ArrowRight, Users, Target, Globe } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import asacLogo from "@/assets/asac-logo.jpg";
+
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
@@ -174,12 +176,13 @@ export const HeroSection = () => {
               </motion.div>
               
               <motion.img
-                src="https://mgx-backend-cdn.metadl.com/generate/images/868448/2025-12-27/be7dcda9-5e91-4d37-ab79-8958f90cffd4.png"
+                src={asacLogo}
                 alt="ASAC - SDG Advocacy Club Logo"
                 className="relative w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 rounded-full object-cover shadow-2xl ring-4 ring-card"
                 animate={{ y: [0, -10, 0] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
               />
+
               
               {/* Floating SDG Icons */}
               {[0, 1, 2, 3, 4, 5].map((i) => (

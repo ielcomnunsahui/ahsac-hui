@@ -28,6 +28,9 @@ import Analytics from "./pages/admin/Analytics";
 import AcademicStructure from "./pages/admin/AcademicStructure";
 import Alumni from "./pages/admin/Alumni";
 import Events from "./pages/admin/Events";
+import Resources from "./pages/Resources";
+import Contact from "./pages/Contact";
+import Team from "./pages/Team";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -52,6 +55,9 @@ const App = () => (
               <Route path="/testimonials" element={<Testimonials />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/member-login" element={<MemberLogin />} />
+              <Route path="/resources" element={<Resources />} />
+              <Route path="/team" element={<Team />} />
+              <Route path="/contact" element={<Contact />} />
               <Route path="/member-dashboard" element={<MemberDashboard />} />
               
               {/* Admin Routes */}
