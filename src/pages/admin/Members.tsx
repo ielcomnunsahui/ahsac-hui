@@ -45,12 +45,18 @@ interface Member {
 interface Faculty {
   id: string;
   name: string;
+  college_id: string | null;
 }
 
 interface Department {
   id: string;
   name: string;
   faculty_id: string;
+}
+
+interface College {
+  id: string;
+  name: string;
 }
 
 const LEVELS_OF_STUDY = [
@@ -66,18 +72,24 @@ const Members = () => {
   const [members, setMembers] = useState<Member[]>([]);
   const [faculties, setFaculties] = useState<Faculty[]>([]);
   const [departments, setDepartments] = useState<Department[]>([]);
+  const [colleges, setColleges] = useState<College[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [editingMember, setEditingMember] = useState<Member | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [filteredDepartments, setFilteredDepartments] = useState<Department[]>([]);
+  
+  // Filter states
+  const [selectedCollege, setSelectedCollege] = useState<string>("all");
+  const [selectedFaculty, setSelectedFaculty] = useState<string>("all");
   const { toast } = useToast();
 
   useEffect(() => {
     fetchMembers();
     fetchFaculties();
     fetchDepartments();
+    fetchColleges();
   }, []);
 
   const fetchMembers = async () => {
@@ -98,13 +110,18 @@ const Members = () => {
   };
 
   const fetchFaculties = async () => {
-    const { data } = await supabase.from('faculties').select('*').order('name');
+    const { data } = await supabase.from('faculties').select('id, name, college_id').order('name');
     setFaculties(data || []);
   };
 
   const fetchDepartments = async () => {
     const { data } = await supabase.from('departments').select('*').order('name');
     setDepartments(data || []);
+  };
+
+  const fetchColleges = async () => {
+    const { data } = await supabase.from('colleges').select('*').order('name');
+    setColleges(data || []);
   };
 
   // Filter departments when faculty changes in edit dialog
@@ -248,13 +265,43 @@ END:VCARD`;
     });
   };
 
+  // Get faculties filtered by selected college
+  const filteredFacultiesByCollege = selectedCollege === "all" 
+    ? faculties 
+    : selectedCollege === "standalone" 
+      ? faculties.filter(f => !f.college_id)
+      : faculties.filter(f => f.college_id === selectedCollege);
+
   const currentYear = new Date().getFullYear();
-  const filteredMembers = members.filter(
-    (m) =>
+  const filteredMembers = members.filter((m) => {
+    // Text search
+    const matchesSearch = 
       m.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       m.matric_number.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      m.department.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+      m.department.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    // College filter
+    let matchesCollege = true;
+    if (selectedCollege !== "all") {
+      if (selectedCollege === "standalone") {
+        // Find standalone faculties (no college_id)
+        const standaloneFacultyIds = faculties.filter(f => !f.college_id).map(f => f.id);
+        matchesCollege = m.faculty_id ? standaloneFacultyIds.includes(m.faculty_id) : false;
+      } else {
+        // Find faculties under this college
+        const collegeFacultyIds = faculties.filter(f => f.college_id === selectedCollege).map(f => f.id);
+        matchesCollege = m.faculty_id ? collegeFacultyIds.includes(m.faculty_id) : false;
+      }
+    }
+
+    // Faculty filter
+    let matchesFaculty = true;
+    if (selectedFaculty !== "all") {
+      matchesFaculty = m.faculty_id === selectedFaculty;
+    }
+
+    return matchesSearch && matchesCollege && matchesFaculty;
+  });
 
   return (
     <>
@@ -286,15 +333,43 @@ END:VCARD`;
 
           <Card>
             <CardHeader>
-              <div className="flex items-center gap-4">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search members..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10"
-                  />
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-wrap gap-4">
+                  <div className="relative flex-1 min-w-[200px]">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search members..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+                  <Select value={selectedCollege} onValueChange={(val) => {
+                    setSelectedCollege(val);
+                    setSelectedFaculty("all");
+                  }}>
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Filter by College" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Colleges</SelectItem>
+                      <SelectItem value="standalone">Standalone Faculties</SelectItem>
+                      {colleges.map((c) => (
+                        <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Select value={selectedFaculty} onValueChange={setSelectedFaculty}>
+                    <SelectTrigger className="w-[200px]">
+                      <SelectValue placeholder="Filter by Faculty" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Faculties</SelectItem>
+                      {filteredFacultiesByCollege.map((f) => (
+                        <SelectItem key={f.id} value={f.id}>{f.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </CardHeader>

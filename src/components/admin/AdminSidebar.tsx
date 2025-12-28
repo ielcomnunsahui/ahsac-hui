@@ -13,20 +13,21 @@ import {
   BarChart3,
   Building2,
   UserMinus,
-  Calendar
+  Calendar,
+  Home
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import asacLogo from "@/assets/asac-logo.jpg";
 
 const navItems = [
   { to: "/admin", icon: LayoutDashboard, label: "Dashboard", end: true },
   { to: "/admin/analytics", icon: BarChart3, label: "Analytics" },
   { to: "/admin/members", icon: Users, label: "Members" },
-  { to: "/admin/colleges", icon: Building2, label: "Colleges" },
-  { to: "/admin/faculties", icon: GraduationCap, label: "Faculties" },
+  { to: "/admin/academic-structure", icon: Building2, label: "Academic Structure" },
   { to: "/admin/alumni", icon: UserMinus, label: "Alumni" },
   { to: "/admin/events", icon: Calendar, label: "Events" },
   { to: "/admin/feedback", icon: MessageSquare, label: "Feedback" },
@@ -60,33 +61,45 @@ export const AdminSidebar = () => {
         </div>
       </div>
 
-      <nav className="flex-1 p-4 space-y-1">
-        {navItems.map((item) => {
-          const isActive = item.end 
-            ? location.pathname === item.to 
-            : location.pathname.startsWith(item.to);
-          
-          return (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              end={item.end}
-              onClick={() => setMobileOpen(false)}
-              className={cn(
-                "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors",
-                isActive
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
-              )}
-            >
-              <item.icon className="h-5 w-5" />
-              {item.label}
-            </NavLink>
-          );
-        })}
-      </nav>
+      <ScrollArea className="flex-1">
+        <nav className="p-4 space-y-1">
+          {navItems.map((item) => {
+            const isActive = item.end 
+              ? location.pathname === item.to 
+              : location.pathname.startsWith(item.to);
+            
+            return (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.end}
+                onClick={() => setMobileOpen(false)}
+                className={cn(
+                  "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors",
+                  isActive
+                    ? "bg-primary text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                )}
+              >
+                <item.icon className="h-5 w-5" />
+                {item.label}
+              </NavLink>
+            );
+          })}
+        </nav>
+      </ScrollArea>
 
-      <div className="p-4 border-t border-border">
+      <div className="p-4 border-t border-border space-y-2">
+        <Button
+          variant="ghost"
+          className="w-full justify-start text-muted-foreground hover:text-foreground"
+          asChild
+        >
+          <NavLink to="/" onClick={() => setMobileOpen(false)}>
+            <Home className="h-5 w-5 mr-3" />
+            Go Home
+          </NavLink>
+        </Button>
         <Button
           variant="ghost"
           className="w-full justify-start text-muted-foreground hover:text-destructive"

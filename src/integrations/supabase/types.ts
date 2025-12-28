@@ -231,6 +231,7 @@ export type Database = {
           description: string | null
           end_date: string | null
           id: string
+          image_url: string | null
           is_published: boolean | null
           location: string | null
           max_attendees: number | null
@@ -245,6 +246,7 @@ export type Database = {
           description?: string | null
           end_date?: string | null
           id?: string
+          image_url?: string | null
           is_published?: boolean | null
           location?: string | null
           max_attendees?: number | null
@@ -259,6 +261,7 @@ export type Database = {
           description?: string | null
           end_date?: string | null
           id?: string
+          image_url?: string | null
           is_published?: boolean | null
           location?: string | null
           max_attendees?: number | null
