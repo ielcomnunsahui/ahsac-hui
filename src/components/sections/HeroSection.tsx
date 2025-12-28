@@ -3,6 +3,7 @@ import { ArrowRight, Users, Target, Globe } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import asacLogo from "@/assets/asac-logo.jpg";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
@@ -24,12 +25,6 @@ export const HeroSection = () => {
     <section className="relative min-h-[90vh] flex items-center overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-secondary/30" />
-      
-      {/* Hero Background Image */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center opacity-20"
-        style={{ backgroundImage: 'url(https://mgx-backend-cdn.metadl.com/generate/images/868448/2025-12-27/1f4b12dc-ad36-4d98-8b58-400a66c2222e.png)' }}
-      />
       
       {/* Animated Background Orbs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -174,7 +169,7 @@ export const HeroSection = () => {
               </motion.div>
               
               <motion.img
-                src="https://mgx-backend-cdn.metadl.com/generate/images/868448/2025-12-27/be7dcda9-5e91-4d37-ab79-8958f90cffd4.png"
+                src={asacLogo}
                 alt="ASAC - SDG Advocacy Club Logo"
                 className="relative w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 rounded-full object-cover shadow-2xl ring-4 ring-card"
                 animate={{ y: [0, -10, 0] }}

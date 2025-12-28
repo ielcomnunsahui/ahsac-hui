@@ -12,6 +12,3 @@ Allow: /
 
 User-agent: *
 Allow: /
-
-
-Sitemap: https://asac-hui.vercel.app/sitemap.xml
