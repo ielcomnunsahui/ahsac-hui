@@ -441,22 +441,23 @@ Register here: {LINK}
 
         {/* Share Dialog */}
         <Dialog open={isShareDialogOpen} onOpenChange={setIsShareDialogOpen}>
-          <DialogContent className="max-w-lg">
+          <DialogContent className="max-w-lg max-h-[90vh] flex flex-col">
             <DialogHeader>
               <DialogTitle>Share Registration Link</DialogTitle>
             </DialogHeader>
-            <Tabs defaultValue="message" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="message">Custom Message</TabsTrigger>
-                <TabsTrigger value="share">Quick Share</TabsTrigger>
-              </TabsList>
-              <TabsContent value="message" className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Share Message</Label>
-                  <Textarea
-                    value={shareMessage}
-                    onChange={(e) => setShareMessage(e.target.value)}
-                    rows={6}
+            <div className="flex-1 overflow-y-auto pr-2">
+              <Tabs defaultValue="message" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="message">Custom Message</TabsTrigger>
+                  <TabsTrigger value="share">Quick Share</TabsTrigger>
+                </TabsList>
+                <TabsContent value="message" className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>Share Message</Label>
+                    <Textarea
+                      value={shareMessage}
+                      onChange={(e) => setShareMessage(e.target.value)}
+                      rows={6}
                     placeholder="Enter your custom message. Use {LINK} as placeholder for the registration link."
                   />
                   <p className="text-xs text-muted-foreground">
@@ -503,6 +504,7 @@ Register here: {LINK}
                 </div>
               </TabsContent>
             </Tabs>
+            </div>
           </DialogContent>
         </Dialog>
       </AdminLayout>
