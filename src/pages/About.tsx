@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Layout } from "@/components/layout/Layout";
 import { Target, Eye, Users, BookOpen, Megaphone, Heart, Loader2, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import asacLogo from "@/assets/asac-logo.jpg";
 
 interface FoundingMember {
   id: string;
@@ -84,14 +85,6 @@ const About = () => {
           name="description"
           content="Learn about ASAC's mission to champion the UN Sustainable Development Goals at Al-Hikmah University. Discover our vision, objectives, and founding members."
         />
-        <meta
-          name="keywords"
-          content="ASAC, About, Mission, Vision, Objectives, Founding Members, SDG, Sustainable Development Goals, Al-Hikmah University"
-        />
-        <meta property="og:title" content="About ASAC - Our Mission, Vision & Objectives" />
-        <meta property="og:description" content="Learn about ASAC's mission to champion the UN Sustainable Development Goals at Al-Hikmah University. Discover our vision, objectives, and founding members." />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://asac-hui.vercel.app/about" />
       </Helmet>
       <Layout>
         {/* Hero */}
@@ -124,7 +117,7 @@ const About = () => {
                 className="relative flex justify-center"
               >
                 <img
-                  src="https://mgx-backend-cdn.metadl.com/generate/images/868448/2025-12-27/be7dcda9-5e91-4d37-ab79-8958f90cffd4.png"
+                  src={asacLogo}
                   alt="ASAC Logo"
                   className="w-64 h-64 sm:w-80 sm:h-80 rounded-2xl object-cover shadow-2xl"
                 />
