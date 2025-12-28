@@ -12,6 +12,7 @@ import About from "./pages/About";
 import SDGs from "./pages/SDGs";
 import Register from "./pages/Register";
 import Feedback from "./pages/Feedback";
+import Testimonials from "./pages/Testimonials";
 import Auth from "./pages/Auth";
 import MemberLogin from "./pages/MemberLogin";
 import MemberDashboard from "./pages/MemberDashboard";
@@ -19,13 +20,12 @@ import PublicEvents from "./pages/Events";
 import EventDetails from "./pages/EventDetails";
 import Dashboard from "./pages/admin/Dashboard";
 import Members from "./pages/admin/Members";
-import Faculties from "./pages/admin/Faculties";
 import FeedbackAdmin from "./pages/admin/FeedbackAdmin";
 import FoundingMembers from "./pages/admin/FoundingMembers";
 import RegistrationLinks from "./pages/admin/RegistrationLinks";
 import Settings from "./pages/admin/Settings";
 import Analytics from "./pages/admin/Analytics";
-import Colleges from "./pages/admin/Colleges";
+import AcademicStructure from "./pages/admin/AcademicStructure";
 import Alumni from "./pages/admin/Alumni";
 import Events from "./pages/admin/Events";
 import NotFound from "./pages/NotFound";
@@ -49,6 +49,7 @@ const App = () => (
               <Route path="/events/:id" element={<EventDetails />} />
               <Route path="/register" element={<Register />} />
               <Route path="/feedback" element={<Feedback />} />
+              <Route path="/testimonials" element={<Testimonials />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/member-login" element={<MemberLogin />} />
               <Route path="/member-dashboard" element={<MemberDashboard />} />
@@ -57,8 +58,7 @@ const App = () => (
               <Route path="/admin" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
               <Route path="/admin/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
               <Route path="/admin/members" element={<ProtectedRoute><Members /></ProtectedRoute>} />
-              <Route path="/admin/colleges" element={<ProtectedRoute><Colleges /></ProtectedRoute>} />
-              <Route path="/admin/faculties" element={<ProtectedRoute><Faculties /></ProtectedRoute>} />
+              <Route path="/admin/academic-structure" element={<ProtectedRoute><AcademicStructure /></ProtectedRoute>} />
               <Route path="/admin/alumni" element={<ProtectedRoute><Alumni /></ProtectedRoute>} />
               <Route path="/admin/events" element={<ProtectedRoute><Events /></ProtectedRoute>} />
               <Route path="/admin/feedback" element={<ProtectedRoute><FeedbackAdmin /></ProtectedRoute>} />
