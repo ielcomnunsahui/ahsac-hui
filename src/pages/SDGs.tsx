@@ -33,6 +33,14 @@ const SDGs = () => {
           name="description"
           content="Explore the 17 United Nations Sustainable Development Goals. Learn how ASAC advocates for each goal at Al-Hikmah University."
         />
+        <meta
+          name="keywords"
+          content="SDG, Sustainable Development Goals, UN Goals, No Poverty, Zero Hunger, Good Health, Quality Education, Gender Equality, Clean Water, Clean Energy, Decent Work, Innovation, Reduced Inequalities, Sustainable Cities, Responsible Consumption, Climate Action, Life Below Water, Life on Land, Peace and Justice, Partnerships"
+        />
+        <meta property="og:title" content="The 17 SDGs - Sustainable Development Goals | ASAC" />
+        <meta property="og:description" content="Explore the 17 United Nations Sustainable Development Goals. Learn how ASAC advocates for each goal at Al-Hikmah University." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://asac-hui.vercel.app/sdg-goals" />
       </Helmet>
       <Layout>
         {/* Hero */}

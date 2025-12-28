@@ -155,7 +155,7 @@ const EventCard = ({
   );
 };
 
-const RegistrationDialog = ({ 
+const RegistrationDialog = { 
   event, 
   open, 
   onOpenChange,
@@ -323,6 +323,14 @@ const Events = () => {
       <Helmet>
         <title>Events | ASAC - SDG Advocacy Club</title>
         <meta name="description" content="Discover and register for upcoming ASAC events. Join us in advocating for the UN Sustainable Development Goals." />
+        <meta
+          name="keywords"
+          content="ASAC, Events, SDG, Sustainable Development Goals, University Events, Sustainability, Climate Action, Community Events, Al-Hikmah University"
+        />
+        <meta property="og:title" content="Events | ASAC - SDG Advocacy Club" />
+        <meta property="og:description" content="Discover and register for upcoming ASAC events. Join us in advocating for the UN Sustainable Development Goals." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://asac-hui.vercel.app/events" />
       </Helmet>
 
       <div className="section-padding pt-24 min-h-screen">
