@@ -43,9 +43,10 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { 
   Plus, Calendar, MapPin, Users, Pencil, Trash2, Loader2, 
-  Eye, EyeOff, CheckCircle, Clock, UserCheck
+  Eye, EyeOff, CheckCircle, Clock, UserCheck, Image as ImageIcon
 } from "lucide-react";
 import { format } from "date-fns";
+import { ImageUpload } from "@/components/admin/ImageUpload";
 
 interface Event {
   id: string;
@@ -57,6 +58,7 @@ interface Event {
   max_attendees: number | null;
   is_published: boolean;
   registration_required: boolean;
+  image_url: string | null;
   created_at: string;
 }
 
@@ -97,6 +99,7 @@ const EventForm = ({
   const [maxAttendees, setMaxAttendees] = useState(event?.max_attendees?.toString() || "");
   const [isPublished, setIsPublished] = useState(event?.is_published || false);
   const [registrationRequired, setRegistrationRequired] = useState(event?.registration_required !== false);
+  const [imageUrl, setImageUrl] = useState(event?.image_url || "");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,6 +112,7 @@ const EventForm = ({
       max_attendees: maxAttendees ? parseInt(maxAttendees) : null,
       is_published: isPublished,
       registration_required: registrationRequired,
+      image_url: imageUrl || null,
     });
   };
 
@@ -145,6 +149,13 @@ const EventForm = ({
           placeholder="e.g., Main Auditorium"
         />
       </div>
+
+      <ImageUpload
+        currentUrl={imageUrl}
+        onUpload={setImageUrl}
+        folder="events"
+        label="Event Banner Image"
+      />
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
