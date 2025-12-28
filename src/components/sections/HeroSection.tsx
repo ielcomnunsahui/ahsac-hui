@@ -3,6 +3,7 @@ import { ArrowRight, Users, Target, Globe } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import asacLogo from "@/assets/asac-logo.png";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
