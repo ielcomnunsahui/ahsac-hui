@@ -27,6 +27,7 @@ interface Event {
   max_attendees: number | null;
   registration_required: boolean | null;
   is_published: boolean | null;
+  image_url: string | null;
 }
 
 interface RegistrationError {
@@ -72,7 +73,16 @@ const EventCard = ({
       transition={{ duration: 0.4 }}
     >
       <Link to={`/events/${event.id}`}>
-        <Card className={`hover-lift h-full cursor-pointer ${isPastEvent ? 'opacity-80' : ''}`}>
+        <Card className={`hover-lift h-full cursor-pointer overflow-hidden ${isPastEvent ? 'opacity-80' : ''}`}>
+          {event.image_url && (
+            <div className="aspect-video w-full overflow-hidden">
+              <img 
+                src={event.image_url} 
+                alt={event.title}
+                className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+              />
+            </div>
+          )}
           <CardHeader>
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1">

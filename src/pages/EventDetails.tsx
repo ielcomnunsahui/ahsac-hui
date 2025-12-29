@@ -36,6 +36,7 @@ interface Event {
   max_attendees: number | null;
   registration_required: boolean | null;
   is_published: boolean | null;
+  image_url: string | null;
 }
 
 const RegistrationDialog = ({ 
@@ -281,6 +282,17 @@ const EventDetails = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
+            {/* Event Banner Image */}
+            {event.image_url && (
+              <div className="aspect-video w-full rounded-xl overflow-hidden mb-8">
+                <img 
+                  src={event.image_url} 
+                  alt={event.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            )}
+
             {/* Header */}
             <div className="mb-8">
               <div className="flex flex-wrap items-center gap-2 mb-4">
