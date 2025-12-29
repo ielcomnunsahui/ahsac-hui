@@ -3,7 +3,7 @@ import { Helmet } from "react-helmet-async";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
-import { Users, TrendingUp, GraduationCap, Calendar, UserCheck } from "lucide-react";
+import { Users, TrendingUp, GraduationCap, Calendar, UserCheck, Building2 } from "lucide-react";
 import {
   AreaChart,
   Area,
@@ -32,6 +32,12 @@ interface FacultyDistribution {
   count: number;
 }
 
+interface DepartmentDistribution {
+  name: string;
+  count: number;
+  faculty: string;
+}
+
 interface MonthlyData {
   month: string;
   count: number;
@@ -42,13 +48,20 @@ interface LevelDistribution {
   count: number;
 }
 
-const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#ec4899', '#84cc16'];
+interface GenderDistribution {
+  gender: string;
+  count: number;
+}
+
+const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4', '#ec4899', '#84cc16', '#f97316', '#14b8a6'];
 
 const Analytics = () => {
   const [stats, setStats] = useState<MemberStats>({ total: 0, thisMonth: 0, lastMonth: 0, growthRate: 0 });
   const [facultyDistribution, setFacultyDistribution] = useState<FacultyDistribution[]>([]);
+  const [departmentDistribution, setDepartmentDistribution] = useState<DepartmentDistribution[]>([]);
   const [monthlyRegistrations, setMonthlyRegistrations] = useState<MonthlyData[]>([]);
   const [levelDistribution, setLevelDistribution] = useState<LevelDistribution[]>([]);
+  const [genderDistribution, setGenderDistribution] = useState<GenderDistribution[]>([]);
   const [graduationYears, setGraduationYears] = useState<{ year: number; count: number }[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -56,12 +69,43 @@ const Analytics = () => {
     fetchAnalytics();
   }, []);
 
+  const inferGenderFromName = (name: string): string => {
+    // Common Nigerian/Muslim male prefixes and names
+    const maleIndicators = [
+      'abdul', 'muhammad', 'ahmad', 'mohammed', 'ahmed', 'ibrahim', 'usman', 
+      'yusuf', 'ismail', 'sulaiman', 'aliyu', 'musa', 'isa', 'idris', 'hamza',
+      'bashir', 'kabir', 'sadiq', 'rashid', 'hassan', 'hussain', 'jamiu',
+      'john', 'peter', 'paul', 'james', 'david', 'michael', 'samuel', 'daniel',
+      'emmanuel', 'oluwa', 'chukwu', 'adebayo', 'oluwaseun', 'ayomide', 'chinedu'
+    ];
+    
+    // Common Nigerian/Muslim female prefixes and names
+    const femaleIndicators = [
+      'fatima', 'aisha', 'khadija', 'zainab', 'maryam', 'hauwa', 'halima',
+      'amina', 'hadiza', 'rahma', 'safiya', 'rukayya', 'hafsat', 'ummi',
+      'mary', 'grace', 'blessing', 'faith', 'joy', 'patience', 'comfort',
+      'queen', 'victoria', 'elizabeth', 'chioma', 'ngozi', 'adaeze', 'oluchi',
+      'bukola', 'funke', 'bisi', 'folake', 'shade', 'nike', 'toyin', 'yetunde'
+    ];
+
+    const firstName = name.toLowerCase().split(' ')[0];
+    
+    if (maleIndicators.some(indicator => firstName.includes(indicator))) {
+      return 'Male';
+    }
+    if (femaleIndicators.some(indicator => firstName.includes(indicator))) {
+      return 'Female';
+    }
+    
+    return 'Unknown';
+  };
+
   const fetchAnalytics = async () => {
     try {
-      // Fetch all members
+      // Fetch all members with faculty and department info
       const { data: members } = await supabase
         .from('members')
-        .select('*, faculties(name)');
+        .select('*, faculties(name), departments(name)');
 
       if (!members) return;
 
@@ -100,6 +144,23 @@ const Analytics = () => {
           .sort((a, b) => b.count - a.count)
       );
 
+      // Department distribution
+      const deptCounts: Record<string, { count: number; faculty: string }> = {};
+      members.forEach(m => {
+        const deptName = m.departments?.name || m.department || 'Unknown';
+        const facultyName = m.faculties?.name || 'Unknown';
+        if (!deptCounts[deptName]) {
+          deptCounts[deptName] = { count: 0, faculty: facultyName };
+        }
+        deptCounts[deptName].count++;
+      });
+      setDepartmentDistribution(
+        Object.entries(deptCounts)
+          .map(([name, data]) => ({ name, count: data.count, faculty: data.faculty }))
+          .sort((a, b) => b.count - a.count)
+          .slice(0, 15) // Top 15 departments
+      );
+
       // Monthly registrations (last 12 months)
       const monthlyData: Record<string, number> = {};
       for (let i = 11; i >= 0; i--) {
@@ -130,6 +191,18 @@ const Analytics = () => {
           .sort((a, b) => b.count - a.count)
       );
 
+      // Gender distribution (inferred from names)
+      const genderCounts: Record<string, number> = { Male: 0, Female: 0, Unknown: 0 };
+      members.forEach(m => {
+        const gender = inferGenderFromName(m.full_name);
+        genderCounts[gender]++;
+      });
+      setGenderDistribution(
+        Object.entries(genderCounts)
+          .filter(([_, count]) => count > 0)
+          .map(([gender, count]) => ({ gender, count }))
+      );
+
       // Expected graduation years
       const gradYearCounts: Record<number, number> = {};
       members.forEach(m => {
@@ -148,6 +221,12 @@ const Analytics = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const GENDER_COLORS = {
+    Male: '#3b82f6',
+    Female: '#ec4899',
+    Unknown: '#9ca3af'
   };
 
   return (
@@ -258,6 +337,52 @@ const Analytics = () => {
 
             <Card>
               <CardHeader>
+                <CardTitle>Gender Distribution</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[300px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={genderDistribution}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ gender, percent }) => `${gender} (${(percent * 100).toFixed(0)}%)`}
+                        outerRadius={100}
+                        fill="#8884d8"
+                        dataKey="count"
+                        nameKey="gender"
+                      >
+                        {genderDistribution.map((entry) => (
+                          <Cell 
+                            key={`cell-${entry.gender}`} 
+                            fill={GENDER_COLORS[entry.gender as keyof typeof GENDER_COLORS] || '#9ca3af'} 
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: 'hsl(var(--card))', 
+                          border: '1px solid hsl(var(--border))',
+                          borderRadius: '8px'
+                        }} 
+                      />
+                      <Legend />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+                <p className="text-xs text-muted-foreground text-center mt-2">
+                  * Gender is inferred from first names
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Charts Row 2 */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
                 <CardTitle>Faculty Distribution</CardTitle>
               </CardHeader>
               <CardContent>
@@ -269,7 +394,7 @@ const Analytics = () => {
                         cx="50%"
                         cy="50%"
                         labelLine={false}
-                        label={({ name, percent }) => `${name.substring(0, 15)}... (${(percent * 100).toFixed(0)}%)`}
+                        label={({ name, percent }) => `${name.substring(0, 12)}${name.length > 12 ? '...' : ''} (${(percent * 100).toFixed(0)}%)`}
                         outerRadius={100}
                         fill="#8884d8"
                         dataKey="count"
@@ -290,10 +415,7 @@ const Analytics = () => {
                 </div>
               </CardContent>
             </Card>
-          </div>
 
-          {/* Charts Row 2 */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
                 <CardTitle>Level of Study Distribution</CardTitle>
@@ -318,7 +440,49 @@ const Analytics = () => {
                 </div>
               </CardContent>
             </Card>
+          </div>
 
+          {/* Department Distribution */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Building2 className="h-5 w-5" />
+                Top Departments by Membership
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-[400px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={departmentDistribution} layout="vertical">
+                    <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                    <XAxis type="number" className="text-xs" />
+                    <YAxis 
+                      dataKey="name" 
+                      type="category" 
+                      width={150} 
+                      className="text-xs"
+                      tickFormatter={(value) => value.length > 20 ? `${value.substring(0, 20)}...` : value}
+                    />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'hsl(var(--card))', 
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '8px'
+                      }}
+                      formatter={(value, name, props) => [
+                        `${value} members`,
+                        props.payload.faculty
+                      ]}
+                    />
+                    <Bar dataKey="count" fill="#10b981" radius={[0, 4, 4, 0]} name="Members" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Charts Row 3 */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
                 <CardTitle>Expected Graduation Years</CardTitle>
@@ -343,44 +507,44 @@ const Analytics = () => {
                 </div>
               </CardContent>
             </Card>
-          </div>
 
-          {/* Faculty Breakdown Table */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <GraduationCap className="h-5 w-5" />
-                Faculty Breakdown
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {facultyDistribution.map((faculty, index) => (
-                  <div key={faculty.name} className="flex items-center gap-4">
-                    <div 
-                      className="w-3 h-3 rounded-full" 
-                      style={{ backgroundColor: COLORS[index % COLORS.length] }}
-                    />
-                    <div className="flex-1">
-                      <div className="flex justify-between mb-1">
-                        <span className="text-sm font-medium">{faculty.name}</span>
-                        <span className="text-sm text-muted-foreground">{faculty.count} members</span>
-                      </div>
-                      <div className="h-2 bg-secondary rounded-full overflow-hidden">
-                        <div 
-                          className="h-full rounded-full transition-all duration-500"
-                          style={{ 
-                            width: `${(faculty.count / stats.total) * 100}%`,
-                            backgroundColor: COLORS[index % COLORS.length]
-                          }}
-                        />
+            {/* Faculty Breakdown Table */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <GraduationCap className="h-5 w-5" />
+                  Faculty Breakdown
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3 max-h-[300px] overflow-y-auto">
+                  {facultyDistribution.map((faculty, index) => (
+                    <div key={faculty.name} className="flex items-center gap-4">
+                      <div 
+                        className="w-3 h-3 rounded-full flex-shrink-0" 
+                        style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex justify-between mb-1">
+                          <span className="text-sm font-medium truncate">{faculty.name}</span>
+                          <span className="text-sm text-muted-foreground flex-shrink-0 ml-2">{faculty.count}</span>
+                        </div>
+                        <div className="h-2 bg-secondary rounded-full overflow-hidden">
+                          <div 
+                            className="h-full rounded-full transition-all duration-500"
+                            style={{ 
+                              width: `${(faculty.count / stats.total) * 100}%`,
+                              backgroundColor: COLORS[index % COLORS.length]
+                            }}
+                          />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </AdminLayout>
     </>

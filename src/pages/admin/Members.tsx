@@ -19,12 +19,23 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, Edit, Trash2, Download, Copy, Loader2, Contact, GraduationCap, UserMinus } from "lucide-react";
+import { 
+  Search, Edit, Trash2, Download, Copy, Loader2, Contact, 
+  GraduationCap, CheckSquare, Phone, Share2, FileText
+} from "lucide-react";
 
 interface Member {
   id: string;
@@ -79,6 +90,7 @@ const Members = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [filteredDepartments, setFilteredDepartments] = useState<Department[]>([]);
+  const [selectedMembers, setSelectedMembers] = useState<Set<string>>(new Set());
   
   // Filter states
   const [selectedCollege, setSelectedCollege] = useState<string>("all");
@@ -208,34 +220,71 @@ const Members = () => {
     }
   };
 
-  const exportWhatsAppNumbers = () => {
-    const numbers = members.map((m) => m.whatsapp_number).join('\n');
-    const blob = new Blob([numbers], { type: 'text/csv' });
+  // Selection handlers
+  const toggleMemberSelection = (id: string) => {
+    setSelectedMembers(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+      }
+      return newSet;
+    });
+  };
+
+  const selectAllVisible = () => {
+    const visibleIds = filteredMembers.map(m => m.id);
+    setSelectedMembers(new Set(visibleIds));
+  };
+
+  const clearSelection = () => {
+    setSelectedMembers(new Set());
+  };
+
+  const getSelectedMembers = () => {
+    return members.filter(m => selectedMembers.has(m.id));
+  };
+
+  // Export functions for selected members
+  const copySelectedNumbers = () => {
+    const selected = getSelectedMembers();
+    if (selected.length === 0) {
+      toast({ title: "No selection", description: "Please select members first", variant: "destructive" });
+      return;
+    }
+    const numbers = selected.map((m) => m.whatsapp_number).join(', ');
+    navigator.clipboard.writeText(numbers);
+    toast({ title: "Copied", description: `${selected.length} WhatsApp numbers copied to clipboard` });
+  };
+
+  const exportSelectedCSV = () => {
+    const selected = getSelectedMembers();
+    if (selected.length === 0) {
+      toast({ title: "No selection", description: "Please select members first", variant: "destructive" });
+      return;
+    }
+    const header = "Name,Matric Number,Faculty,Department,WhatsApp,Level,Expected Graduation\n";
+    const rows = selected.map(m => 
+      `"${m.full_name}","${m.matric_number}","${m.faculties?.name || ''}","${m.departments?.name || m.department}","${m.whatsapp_number}","${m.level_of_study || ''}","${m.expected_graduation_year || ''}"`
+    ).join('\n');
+    const blob = new Blob([header + rows], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'whatsapp_numbers.csv';
+    a.download = `asac_members_${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
-    toast({ title: "Exported", description: "WhatsApp numbers exported successfully" });
+    URL.revokeObjectURL(url);
+    toast({ title: "Exported", description: `${selected.length} members exported to CSV` });
   };
 
-  const copyNumbers = () => {
-    const numbers = members.map((m) => m.whatsapp_number).join(', ');
-    navigator.clipboard.writeText(numbers);
-    toast({ title: "Copied", description: "WhatsApp numbers copied to clipboard" });
-  };
-
-  const exportVCards = () => {
-    const filteredMembers = searchQuery 
-      ? members.filter(
-          (m) =>
-            m.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            m.matric_number.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            m.department.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-      : members;
-
-    const vcards = filteredMembers.map((member) => {
+  const exportSelectedVCards = () => {
+    const selected = getSelectedMembers();
+    if (selected.length === 0) {
+      toast({ title: "No selection", description: "Please select members first", variant: "destructive" });
+      return;
+    }
+    const vcards = selected.map((member) => {
       const nameParts = member.full_name.split(' ');
       const firstName = nameParts[0] || '';
       const lastName = nameParts.slice(1).join(' ') || '';
@@ -261,7 +310,84 @@ END:VCARD`;
     
     toast({ 
       title: "Exported", 
-      description: `${filteredMembers.length} member vCards exported successfully` 
+      description: `${selected.length} member vCards exported. Import this file to add contacts to your phone or Google Contacts.` 
+    });
+  };
+
+  const addToGoogleContacts = () => {
+    const selected = getSelectedMembers();
+    if (selected.length === 0) {
+      toast({ title: "No selection", description: "Please select members first", variant: "destructive" });
+      return;
+    }
+    // Export as vCard and open Google Contacts import page
+    exportSelectedVCards();
+    window.open('https://contacts.google.com/import', '_blank');
+    toast({ 
+      title: "Google Contacts", 
+      description: "vCard file downloaded. Upload it on the Google Contacts import page that just opened." 
+    });
+  };
+
+  const shareViaWhatsApp = () => {
+    const selected = getSelectedMembers();
+    if (selected.length === 0) {
+      toast({ title: "No selection", description: "Please select members first", variant: "destructive" });
+      return;
+    }
+    const contactList = selected.map(m => `${m.full_name}: ${m.whatsapp_number}`).join('\n');
+    const message = `*ASAC Member Contacts (${selected.length})*\n\n${contactList}`;
+    const encoded = encodeURIComponent(message);
+    window.open(`https://wa.me/?text=${encoded}`, '_blank');
+  };
+
+  // Legacy export functions (all members)
+  const exportWhatsAppNumbers = () => {
+    const numbers = members.map((m) => m.whatsapp_number).join('\n');
+    const blob = new Blob([numbers], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'whatsapp_numbers.csv';
+    a.click();
+    toast({ title: "Exported", description: "All WhatsApp numbers exported successfully" });
+  };
+
+  const copyNumbers = () => {
+    const numbers = members.map((m) => m.whatsapp_number).join(', ');
+    navigator.clipboard.writeText(numbers);
+    toast({ title: "Copied", description: "All WhatsApp numbers copied to clipboard" });
+  };
+
+  const exportVCards = () => {
+    const targetMembers = filteredMembers;
+    const vcards = targetMembers.map((member) => {
+      const nameParts = member.full_name.split(' ');
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || '';
+      
+      return `BEGIN:VCARD
+VERSION:3.0
+N:${lastName};${firstName};;;
+FN:${member.full_name}
+ORG:ASAC - ${member.faculties?.name || 'Al-Hikmah University'}
+TITLE:${member.department}
+TEL;TYPE=CELL:${member.whatsapp_number}
+NOTE:Matric: ${member.matric_number}\\nDepartment: ${member.department}\\nFaculty: ${member.faculties?.name || 'N/A'}\\nLevel: ${member.level_of_study || 'N/A'}\\nExpected Graduation: ${member.expected_graduation_year || 'N/A'}
+END:VCARD`;
+    }).join('\n');
+
+    const blob = new Blob([vcards], { type: 'text/vcard' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `asac_members_${new Date().toISOString().split('T')[0]}.vcf`;
+    a.click();
+    URL.revokeObjectURL(url);
+    
+    toast({ 
+      title: "Exported", 
+      description: `${targetMembers.length} member vCards exported successfully` 
     });
   };
 
@@ -303,6 +429,8 @@ END:VCARD`;
     return matchesSearch && matchesCollege && matchesFaculty;
   });
 
+  const allVisibleSelected = filteredMembers.length > 0 && filteredMembers.every(m => selectedMembers.has(m.id));
+
   return (
     <>
       <Helmet>
@@ -316,18 +444,63 @@ END:VCARD`;
               <p className="text-muted-foreground">Manage registered members ({members.length} total)</p>
             </div>
             <div className="flex flex-wrap gap-2">
-              <Button variant="outline" onClick={copyNumbers}>
-                <Copy className="h-4 w-4 mr-2" />
-                Copy Numbers
-              </Button>
-              <Button variant="outline" onClick={exportWhatsAppNumbers}>
-                <Download className="h-4 w-4 mr-2" />
-                Export CSV
-              </Button>
-              <Button variant="outline" onClick={exportVCards}>
-                <Contact className="h-4 w-4 mr-2" />
-                Export vCards
-              </Button>
+              {selectedMembers.size > 0 ? (
+                <>
+                  <Badge variant="secondary" className="px-3 py-1">
+                    {selectedMembers.size} selected
+                  </Badge>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="default">
+                        <Share2 className="h-4 w-4 mr-2" />
+                        Export Selected
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-56">
+                      <DropdownMenuItem onClick={copySelectedNumbers}>
+                        <Copy className="h-4 w-4 mr-2" />
+                        Copy Numbers
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={exportSelectedCSV}>
+                        <FileText className="h-4 w-4 mr-2" />
+                        Export to CSV
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={exportSelectedVCards}>
+                        <Contact className="h-4 w-4 mr-2" />
+                        Export vCards (Phone Contacts)
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={addToGoogleContacts}>
+                        <Phone className="h-4 w-4 mr-2" />
+                        Add to Google Contacts
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={shareViaWhatsApp}>
+                        <Share2 className="h-4 w-4 mr-2" />
+                        Share via WhatsApp
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  <Button variant="outline" onClick={clearSelection}>
+                    Clear
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button variant="outline" onClick={copyNumbers}>
+                    <Copy className="h-4 w-4 mr-2" />
+                    Copy All
+                  </Button>
+                  <Button variant="outline" onClick={exportWhatsAppNumbers}>
+                    <Download className="h-4 w-4 mr-2" />
+                    Export CSV
+                  </Button>
+                  <Button variant="outline" onClick={exportVCards}>
+                    <Contact className="h-4 w-4 mr-2" />
+                    Export vCards
+                  </Button>
+                </>
+              )}
             </div>
           </div>
 
@@ -383,6 +556,18 @@ END:VCARD`;
                   <Table>
                     <TableHeader>
                       <TableRow>
+                        <TableHead className="w-[50px]">
+                          <Checkbox
+                            checked={allVisibleSelected}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                selectAllVisible();
+                              } else {
+                                clearSelection();
+                              }
+                            }}
+                          />
+                        </TableHead>
                         <TableHead>Name</TableHead>
                         <TableHead>Matric No.</TableHead>
                         <TableHead>Faculty</TableHead>
@@ -397,13 +582,19 @@ END:VCARD`;
                     <TableBody>
                       {filteredMembers.length === 0 ? (
                         <TableRow>
-                          <TableCell colSpan={9} className="text-center text-muted-foreground">
+                          <TableCell colSpan={10} className="text-center text-muted-foreground">
                             No members found
                           </TableCell>
                         </TableRow>
                       ) : (
                         filteredMembers.map((member) => (
-                          <TableRow key={member.id}>
+                          <TableRow key={member.id} className={selectedMembers.has(member.id) ? 'bg-muted/50' : ''}>
+                            <TableCell>
+                              <Checkbox
+                                checked={selectedMembers.has(member.id)}
+                                onCheckedChange={() => toggleMemberSelection(member.id)}
+                              />
+                            </TableCell>
                             <TableCell className="font-medium">{member.full_name}</TableCell>
                             <TableCell>{member.matric_number}</TableCell>
                             <TableCell>{member.faculties?.name || '-'}</TableCell>

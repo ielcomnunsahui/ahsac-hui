@@ -11,13 +11,15 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { ImageUpload } from "@/components/admin/ImageUpload";
-import { Plus, Edit, Trash2, Loader2, User } from "lucide-react";
+import { Plus, Edit, Trash2, Loader2, User, Instagram, Twitter, Linkedin, Globe } from "lucide-react";
 
 interface FoundingMember {
   id: string;
@@ -43,6 +45,22 @@ const emptyMember: MemberFormData = {
   bio: '',
   display_order: 0,
 };
+
+const ROLE_SUGGESTIONS = [
+  "President",
+  "Vice President",
+  "Secretary General",
+  "Financial Secretary",
+  "Treasurer",
+  "Public Relations Officer",
+  "Director of Programs",
+  "Director of Welfare",
+  "Director of Socials",
+  "Auditor",
+  "Legal Adviser",
+  "Patron",
+  "Adviser",
+];
 
 const FoundingMembers = () => {
   const [members, setMembers] = useState<FoundingMember[]>([]);
@@ -165,53 +183,125 @@ const FoundingMembers = () => {
 
   const MemberFormContent = ({ isEdit }: { isEdit: boolean }) => (
     <ScrollArea className="max-h-[70vh]">
-      <div className="space-y-4 p-1">
-        <ImageUpload
-          currentUrl={formData.image_url}
-          onUpload={(url) => handleInputChange('image_url', url)}
-          folder="founding-members"
-          label="Profile Photo"
-        />
-        <div className="space-y-2">
-          <Label>Name *</Label>
-          <Input
-            value={formData.name}
-            onChange={(e) => handleInputChange('name', e.target.value)}
-            placeholder="Full name"
+      <div className="space-y-6 p-1">
+        {/* Profile Photo Section */}
+        <div className="flex flex-col items-center">
+          <ImageUpload
+            currentUrl={formData.image_url}
+            onUpload={(url) => handleInputChange('image_url', url)}
+            folder="founding-members"
+            label="Profile Photo"
           />
+          <p className="text-xs text-muted-foreground mt-2">
+            Upload a clear headshot for best results
+          </p>
         </div>
-        <div className="space-y-2">
-          <Label>Role *</Label>
-          <Input
-            value={formData.role}
-            onChange={(e) => handleInputChange('role', e.target.value)}
-            placeholder="e.g., President, Secretary"
-          />
+
+        <Separator />
+
+        {/* Basic Information */}
+        <div className="space-y-4">
+          <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">
+            Basic Information
+          </h4>
+          
+          <div className="space-y-2">
+            <Label htmlFor="name">Full Name *</Label>
+            <Input
+              id="name"
+              value={formData.name}
+              onChange={(e) => handleInputChange('name', e.target.value)}
+              placeholder="e.g., John Doe"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="role">Role / Position *</Label>
+            <Input
+              id="role"
+              value={formData.role}
+              onChange={(e) => handleInputChange('role', e.target.value)}
+              placeholder="e.g., President"
+              list="role-suggestions"
+            />
+            <datalist id="role-suggestions">
+              {ROLE_SUGGESTIONS.map((role) => (
+                <option key={role} value={role} />
+              ))}
+            </datalist>
+            <div className="flex flex-wrap gap-1 mt-2">
+              {ROLE_SUGGESTIONS.slice(0, 5).map((role) => (
+                <Button
+                  key={role}
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="text-xs h-6"
+                  onClick={() => handleInputChange('role', role)}
+                >
+                  {role}
+                </Button>
+              ))}
+            </div>
+          </div>
         </div>
-        <div className="space-y-2">
-          <Label>Bio</Label>
-          <Textarea
-            value={formData.bio}
-            onChange={(e) => handleInputChange('bio', e.target.value)}
-            placeholder="Short biography..."
-            rows={3}
-          />
+
+        <Separator />
+
+        {/* Biography */}
+        <div className="space-y-4">
+          <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">
+            Biography
+          </h4>
+          
+          <div className="space-y-2">
+            <Label htmlFor="bio">About (Optional)</Label>
+            <Textarea
+              id="bio"
+              value={formData.bio}
+              onChange={(e) => handleInputChange('bio', e.target.value)}
+              placeholder="Write a short bio about this member. Include their achievements, interests, or contributions to ASAC..."
+              rows={4}
+              className="resize-none"
+            />
+            <p className="text-xs text-muted-foreground">
+              {formData.bio.length}/500 characters
+            </p>
+          </div>
         </div>
-        <div className="space-y-2">
-          <Label>Display Order</Label>
-          <Input
-            type="number"
-            value={formData.display_order}
-            onChange={(e) => handleInputChange('display_order', parseInt(e.target.value) || 0)}
-          />
+
+        <Separator />
+
+        {/* Display Settings */}
+        <div className="space-y-4">
+          <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">
+            Display Settings
+          </h4>
+          
+          <div className="space-y-2">
+            <Label htmlFor="display_order">Display Order</Label>
+            <Input
+              id="display_order"
+              type="number"
+              value={formData.display_order}
+              onChange={(e) => handleInputChange('display_order', parseInt(e.target.value) || 0)}
+              min={0}
+            />
+            <p className="text-xs text-muted-foreground">
+              Lower numbers appear first. Use 0 for top priority.
+            </p>
+          </div>
         </div>
+
+        {/* Submit Button */}
         <Button 
           onClick={isEdit ? handleUpdate : handleAdd} 
           className="w-full" 
           disabled={isSaving || !formData.name.trim() || !formData.role.trim()}
+          size="lg"
         >
           {isSaving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-          {isEdit ? 'Save Changes' : 'Add Member'}
+          {isEdit ? 'Save Changes' : 'Add Founding Member'}
         </Button>
       </div>
     </ScrollArea>
@@ -239,9 +329,12 @@ const FoundingMembers = () => {
                   Add Member
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-md">
+              <DialogContent className="max-w-lg">
                 <DialogHeader>
                   <DialogTitle>Add Founding Member</DialogTitle>
+                  <DialogDescription>
+                    Add a new founding member to showcase on the website's team section.
+                  </DialogDescription>
                 </DialogHeader>
                 <MemberFormContent isEdit={false} />
               </DialogContent>
@@ -254,49 +347,61 @@ const FoundingMembers = () => {
             </div>
           ) : members.length === 0 ? (
             <Card>
-              <CardContent className="py-12 text-center text-muted-foreground">
-                No founding members added yet
+              <CardContent className="py-12 text-center">
+                <User className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <h3 className="font-semibold text-lg mb-2">No Founding Members Yet</h3>
+                <p className="text-muted-foreground mb-4">
+                  Start adding the founding members of ASAC to showcase them on your website.
+                </p>
+                <Button onClick={() => setIsAddDialogOpen(true)}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add First Member
+                </Button>
               </CardContent>
             </Card>
           ) : (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {members.map((member) => (
-                <Card key={member.id}>
-                  <CardHeader className="pb-3">
-                    <div className="flex items-start gap-4">
-                      {member.image_url ? (
+              {members.map((member, index) => (
+                <Card key={member.id} className="overflow-hidden">
+                  <div className="relative">
+                    {member.image_url ? (
+                      <div className="aspect-square">
                         <img
                           src={member.image_url}
                           alt={member.name}
-                          className="w-16 h-16 rounded-full object-cover"
+                          className="w-full h-full object-cover"
                         />
-                      ) : (
-                        <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
-                          <User className="h-8 w-8 text-muted-foreground" />
-                        </div>
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <CardTitle className="text-lg truncate">{member.name}</CardTitle>
-                        <p className="text-sm text-primary">{member.role}</p>
                       </div>
+                    ) : (
+                      <div className="aspect-square bg-muted flex items-center justify-center">
+                        <User className="h-16 w-16 text-muted-foreground" />
+                      </div>
+                    )}
+                    <div className="absolute top-2 left-2">
+                      <span className="bg-background/90 backdrop-blur-sm text-xs font-medium px-2 py-1 rounded-full">
+                        #{member.display_order + 1}
+                      </span>
                     </div>
-                  </CardHeader>
-                  <CardContent>
+                  </div>
+                  <CardContent className="pt-4">
+                    <h3 className="font-semibold text-lg truncate">{member.name}</h3>
+                    <p className="text-primary text-sm font-medium">{member.role}</p>
                     {member.bio && (
-                      <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
+                      <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
                         {member.bio}
                       </p>
                     )}
-                    <div className="flex justify-end gap-2">
+                    <div className="flex justify-end gap-2 mt-4 pt-4 border-t">
                       <Button
-                        variant="ghost"
+                        variant="outline"
                         size="sm"
                         onClick={() => openEditDialog(member)}
                       >
-                        <Edit className="h-4 w-4" />
+                        <Edit className="h-4 w-4 mr-1" />
+                        Edit
                       </Button>
                       <Button
-                        variant="ghost"
+                        variant="outline"
                         size="sm"
                         onClick={() => handleDelete(member.id)}
                         className="text-destructive hover:text-destructive"
@@ -318,9 +423,12 @@ const FoundingMembers = () => {
               setFormData(emptyMember);
             }
           }}>
-            <DialogContent className="max-w-md">
+            <DialogContent className="max-w-lg">
               <DialogHeader>
                 <DialogTitle>Edit Founding Member</DialogTitle>
+                <DialogDescription>
+                  Update the details for this founding member.
+                </DialogDescription>
               </DialogHeader>
               <MemberFormContent isEdit={true} />
             </DialogContent>
