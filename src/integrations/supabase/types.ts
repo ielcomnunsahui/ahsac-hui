@@ -21,6 +21,7 @@ export type Database = {
           department_id: string | null
           faculty_id: string | null
           full_name: string
+          gender: string | null
           graduation_year: number | null
           id: string
           matric_number: string
@@ -34,6 +35,7 @@ export type Database = {
           department_id?: string | null
           faculty_id?: string | null
           full_name: string
+          gender?: string | null
           graduation_year?: number | null
           id?: string
           matric_number: string
@@ -47,6 +49,7 @@ export type Database = {
           department_id?: string | null
           faculty_id?: string | null
           full_name?: string
+          gender?: string | null
           graduation_year?: number | null
           id?: string
           matric_number?: string
@@ -378,6 +381,7 @@ export type Database = {
           expected_graduation_year: number | null
           faculty_id: string | null
           full_name: string
+          gender: string | null
           id: string
           level_of_study: string | null
           matric_number: string
@@ -392,6 +396,7 @@ export type Database = {
           expected_graduation_year?: number | null
           faculty_id?: string | null
           full_name: string
+          gender?: string | null
           id?: string
           level_of_study?: string | null
           matric_number: string
@@ -406,6 +411,7 @@ export type Database = {
           expected_graduation_year?: number | null
           faculty_id?: string | null
           full_name?: string
+          gender?: string | null
           id?: string
           level_of_study?: string | null
           matric_number?: string

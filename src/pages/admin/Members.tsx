@@ -34,7 +34,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { 
   Search, Edit, Trash2, Download, Copy, Loader2, Contact, 
-  GraduationCap, CheckSquare, Phone, Share2, FileText
+  GraduationCap, CheckSquare, Phone, Share2, FileText, Users
 } from "lucide-react";
 
 interface Member {
@@ -220,6 +220,70 @@ const Members = () => {
     }
   };
 
+  // Bulk actions
+  const handleBulkDelete = async () => {
+    const selected = getSelectedMembers();
+    if (selected.length === 0) return;
+    if (!confirm(`Delete ${selected.length} selected members? This cannot be undone.`)) return;
+
+    try {
+      const { error } = await supabase.from('members').delete().in('id', selected.map(m => m.id));
+      if (error) throw error;
+      toast({ title: "Success", description: `${selected.length} members deleted` });
+      clearSelection();
+      fetchMembers();
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    }
+  };
+
+  const handleBulkMoveToAlumni = async () => {
+    const selected = getSelectedMembers();
+    if (selected.length === 0) return;
+    if (!confirm(`Move ${selected.length} members to alumni?`)) return;
+
+    try {
+      for (const member of selected) {
+        await supabase.from('alumni').insert({
+          full_name: member.full_name,
+          matric_number: member.matric_number,
+          faculty_id: member.faculty_id,
+          department_id: member.department_id,
+          department: member.department,
+          whatsapp_number: member.whatsapp_number,
+          graduation_year: member.expected_graduation_year || new Date().getFullYear(),
+          user_id: member.user_id,
+        });
+      }
+      await supabase.from('members').delete().in('id', selected.map(m => m.id));
+      toast({ title: "Success", description: `${selected.length} members moved to alumni` });
+      clearSelection();
+      fetchMembers();
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    }
+  };
+
+  const handleBulkUpdateLevel = async (level: string) => {
+    const selected = getSelectedMembers();
+    if (selected.length === 0) return;
+
+    try {
+      const levelNum = parseInt(level.replace('L', ''));
+      const expectedGradYear = new Date().getFullYear() + Math.max(1, Math.ceil((400 - levelNum) / 100) + 1);
+      
+      const { error } = await supabase.from('members')
+        .update({ level_of_study: level, expected_graduation_year: expectedGradYear })
+        .in('id', selected.map(m => m.id));
+      if (error) throw error;
+      toast({ title: "Success", description: `${selected.length} members updated to ${level}` });
+      clearSelection();
+      fetchMembers();
+    } catch (error: any) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    }
+  };
+
   // Selection handlers
   const toggleMemberSelection = (id: string) => {
     setSelectedMembers(prev => {
@@ -272,7 +336,7 @@ const Members = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `asac_members_${new Date().toISOString().split('T')[0]}.csv`;
+    a.download = `ahsac_members_${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
     URL.revokeObjectURL(url);
     toast({ title: "Exported", description: `${selected.length} members exported to CSV` });
@@ -293,7 +357,7 @@ const Members = () => {
 VERSION:3.0
 N:${lastName};${firstName};;;
 FN:${member.full_name}
-ORG:ASAC - ${member.faculties?.name || 'Al-Hikmah University'}
+ORG:AHSAC - ${member.faculties?.name || 'Al-Hikmah University'}
 TITLE:${member.department}
 TEL;TYPE=CELL:${member.whatsapp_number}
 NOTE:Matric: ${member.matric_number}\\nDepartment: ${member.department}\\nFaculty: ${member.faculties?.name || 'N/A'}\\nLevel: ${member.level_of_study || 'N/A'}\\nExpected Graduation: ${member.expected_graduation_year || 'N/A'}
@@ -304,7 +368,7 @@ END:VCARD`;
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `asac_members_${new Date().toISOString().split('T')[0]}.vcf`;
+    a.download = `ahsac_members_${new Date().toISOString().split('T')[0]}.vcf`;
     a.click();
     URL.revokeObjectURL(url);
     
@@ -336,7 +400,7 @@ END:VCARD`;
       return;
     }
     const contactList = selected.map(m => `${m.full_name}: ${m.whatsapp_number}`).join('\n');
-    const message = `*ASAC Member Contacts (${selected.length})*\n\n${contactList}`;
+    const message = `*AHSAC Member Contacts (${selected.length})*\n\n${contactList}`;
     const encoded = encodeURIComponent(message);
     window.open(`https://wa.me/?text=${encoded}`, '_blank');
   };
@@ -370,7 +434,7 @@ END:VCARD`;
 VERSION:3.0
 N:${lastName};${firstName};;;
 FN:${member.full_name}
-ORG:ASAC - ${member.faculties?.name || 'Al-Hikmah University'}
+ORG:AHSAC - ${member.faculties?.name || 'Al-Hikmah University'}
 TITLE:${member.department}
 TEL;TYPE=CELL:${member.whatsapp_number}
 NOTE:Matric: ${member.matric_number}\\nDepartment: ${member.department}\\nFaculty: ${member.faculties?.name || 'N/A'}\\nLevel: ${member.level_of_study || 'N/A'}\\nExpected Graduation: ${member.expected_graduation_year || 'N/A'}
@@ -381,7 +445,7 @@ END:VCARD`;
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `asac_members_${new Date().toISOString().split('T')[0]}.vcf`;
+    a.download = `ahsac_members_${new Date().toISOString().split('T')[0]}.vcf`;
     a.click();
     URL.revokeObjectURL(url);
     
@@ -434,7 +498,7 @@ END:VCARD`;
   return (
     <>
       <Helmet>
-        <title>Members | ASAC Admin</title>
+        <title>Members | AHSAC Admin</title>
       </Helmet>
       <AdminLayout>
         <div className="space-y-6">
@@ -478,6 +542,29 @@ END:VCARD`;
                       <DropdownMenuItem onClick={shareViaWhatsApp}>
                         <Share2 className="h-4 w-4 mr-2" />
                         Share via WhatsApp
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline">
+                        <Users className="h-4 w-4 mr-2" />
+                        Bulk Actions
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-56">
+                      <DropdownMenuItem onClick={() => handleBulkUpdateLevel("200L")}>Update to 200L</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleBulkUpdateLevel("300L")}>Update to 300L</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleBulkUpdateLevel("400L")}>Update to 400L</DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={handleBulkMoveToAlumni}>
+                        <GraduationCap className="h-4 w-4 mr-2" />
+                        Move to Alumni
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={handleBulkDelete} className="text-destructive">
+                        <Trash2 className="h-4 w-4 mr-2" />
+                        Delete Selected
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
