@@ -13,14 +13,14 @@ const Index = () => {
   return (
     <>
       <Helmet>
-        <title>ASAC - Al-Hikmah University SDG Advocacy Club</title>
+        <title>AHSAC - Al-Hikmah University SDG Advocacy Club</title>
         <meta
           name="description"
-          content="Join ASAC, Al-Hikmah University's SDG Advocacy Club. We champion the 17 Sustainable Development Goals through education, advocacy, and community action."
+          content="Join AHSAC, Al-Hikmah University's SDG Advocacy Club. We champion the 17 Sustainable Development Goals through education, advocacy, and community action."
         />
         <meta
           name="keywords"
-          content="ASAC, SDG, Sustainable Development Goals, Al-Hikmah University, Student Club, Advocacy"
+          content="AHSAC, SDG, Sustainable Development Goals, Al-Hikmah University, Student Club, Advocacy"
         />
       </Helmet>
       <Layout>

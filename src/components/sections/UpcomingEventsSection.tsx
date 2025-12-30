@@ -122,10 +122,12 @@ export const UpcomingEventsSection = () => {
                   </div>
                   
                   {event.registration_required && (
-                    <Button variant="outline" size="sm" className="w-full mt-4 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                      Register Now
-                      <ArrowRight className="h-4 w-4 ml-2" />
-                    </Button>
+                    <Link to={`/events/${event.id}`}>
+                      <Button variant="outline" size="sm" className="w-full mt-4 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                        Register Now
+                        <ArrowRight className="h-4 w-4 ml-2" />
+                      </Button>
+                    </Link>
                   )}
                 </div>
               </div>

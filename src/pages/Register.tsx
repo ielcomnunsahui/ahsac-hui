@@ -18,8 +18,8 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { CheckCircle, User, GraduationCap, Phone, Loader2, XCircle, Mail, Lock, Building2 } from "lucide-react";
-import asacLogo from "@/assets/asac-logo.jpg";
+import { CheckCircle, User, GraduationCap, Phone, Loader2, XCircle, Mail, Lock, Building2, Users } from "lucide-react";
+import ahsacLogo from "@/assets/asac-logo.jpg";
 
 interface College {
   id: string;
@@ -48,6 +48,7 @@ const registrationSchema = z.object({
   whatsappNumber: z.string().regex(/^\+?[1-9]\d{10,14}$/, "Enter a valid WhatsApp number with country code"),
   email: z.string().email("Please enter a valid email").max(255),
   password: z.string().min(6, "Password must be at least 6 characters").max(128),
+  gender: z.string().min(1, "Please select your gender"),
 });
 
 type RegistrationFormData = z.infer<typeof registrationSchema>;
@@ -61,10 +62,14 @@ const LEVELS_OF_STUDY = [
   { value: "600L", label: "600 Level" },
 ];
 
+const GENDERS = [
+  { value: "male", label: "Male" },
+  { value: "female", label: "Female" },
+];
+
 const calculateExpectedGraduationYear = (level: string): number => {
   const currentYear = new Date().getFullYear();
   const levelNum = parseInt(level.replace('L', ''));
-  // Assuming 4-year program for most, add years remaining
   const yearsRemaining = Math.max(1, Math.ceil((400 - levelNum) / 100) + 1);
   return currentYear + yearsRemaining;
 };
@@ -93,7 +98,6 @@ const Register = () => {
   const watchedLevel = watch("levelOfStudy");
 
   useEffect(() => {
-    // Fetch all data
     const fetchData = async () => {
       const [collegesRes, facultiesRes, departmentsRes] = await Promise.all([
         supabase.from('colleges').select('*').order('display_order'),
@@ -104,15 +108,11 @@ const Register = () => {
       setColleges(collegesRes.data || []);
       setFaculties(facultiesRes.data || []);
       setDepartments(departmentsRes.data || []);
-      
-      // Initially show faculties without college (direct faculties)
-      const directFaculties = (facultiesRes.data || []).filter(f => !f.college_id);
       setFilteredFaculties(facultiesRes.data || []);
     };
     
     fetchData();
     
-    // Validate registration link if ref is provided
     const validateLink = async () => {
       if (!refSlug) {
         setIsValidLink(true);
@@ -137,23 +137,19 @@ const Register = () => {
     validateLink();
   }, [refSlug]);
 
-  // Filter faculties when college changes
   useEffect(() => {
     if (selectedCollegeId) {
       const filtered = faculties.filter(f => f.college_id === selectedCollegeId);
       setFilteredFaculties(filtered);
     } else {
-      // Show all faculties when no college selected
       setFilteredFaculties(faculties);
     }
-    // Reset faculty and department when college changes
     setSelectedFacultyId("");
     setValue("facultyId", "");
     setValue("departmentId", "");
     setFilteredDepartments([]);
   }, [selectedCollegeId, faculties, setValue]);
 
-  // Filter departments when faculty changes
   useEffect(() => {
     if (selectedFacultyId) {
       const filtered = departments.filter(d => d.faculty_id === selectedFacultyId);
@@ -168,11 +164,9 @@ const Register = () => {
     setIsSubmitting(true);
     
     try {
-      // Get department name for the department field
       const selectedDept = departments.find(d => d.id === data.departmentId);
       const expectedGradYear = calculateExpectedGraduationYear(data.levelOfStudy);
       
-      // Create the user account WITHOUT email confirmation
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
@@ -196,7 +190,6 @@ const Register = () => {
         return;
       }
       
-      // Create the member record
       const { error: memberError } = await supabase.from('members').insert({
         full_name: data.fullName,
         matric_number: data.matricNumber,
@@ -207,6 +200,7 @@ const Register = () => {
         user_id: authData.user?.id || null,
         level_of_study: data.levelOfStudy,
         expected_graduation_year: expectedGradYear,
+        gender: data.gender,
       });
       
       if (memberError) {
@@ -222,7 +216,7 @@ const Register = () => {
       }
       
       setIsSuccess(true);
-      toast({ title: "Registration Successful!", description: "Welcome to ASAC! You can now log in to your dashboard." });
+      toast({ title: "Registration Successful!", description: "Welcome to AHSAC! You can now log in to your dashboard." });
       reset();
     } catch (error: any) {
       toast({
@@ -248,7 +242,7 @@ const Register = () => {
   if (isValidLink === false) {
     return (
       <>
-        <Helmet><title>Invalid Registration Link | ASAC</title></Helmet>
+        <Helmet><title>Invalid Registration Link | AHSAC</title></Helmet>
         <Layout>
           <section className="section-padding min-h-[70vh] flex items-center justify-center">
             <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center max-w-md mx-auto">
@@ -256,7 +250,7 @@ const Register = () => {
                 <XCircle className="h-10 w-10 text-destructive" />
               </div>
               <h1 className="text-3xl font-display font-bold mb-4">Invalid or Inactive Link</h1>
-              <p className="text-muted-foreground mb-8">This registration link is not valid or has been deactivated. Please contact an ASAC administrator for a valid registration link.</p>
+              <p className="text-muted-foreground mb-8">This registration link is not valid or has been deactivated. Please contact an AHSAC administrator for a valid registration link.</p>
               <Button variant="hero" asChild>
                 <Link to="/">Return Home</Link>
               </Button>
@@ -270,14 +264,14 @@ const Register = () => {
   if (isSuccess) {
     return (
       <>
-        <Helmet><title>Registration Successful | ASAC</title></Helmet>
+        <Helmet><title>Registration Successful | AHSAC</title></Helmet>
         <Layout>
           <section className="section-padding min-h-[70vh] flex items-center justify-center">
             <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center max-w-md mx-auto">
               <div className="w-20 h-20 rounded-full bg-sdg-green/20 flex items-center justify-center mx-auto mb-6">
                 <CheckCircle className="h-10 w-10 text-sdg-green" />
               </div>
-              <h1 className="text-3xl font-display font-bold mb-4">Welcome to ASAC!</h1>
+              <h1 className="text-3xl font-display font-bold mb-4">Welcome to AHSAC!</h1>
               <p className="text-muted-foreground mb-8">Your registration is complete. You can now log in to access your member dashboard.</p>
               <div className="space-y-4">
                 <Button variant="hero" asChild>
@@ -294,18 +288,18 @@ const Register = () => {
 
   return (
     <>
-      <Helmet><title>Join ASAC - Member Registration</title></Helmet>
+      <Helmet><title>Join AHSAC - Member Registration</title></Helmet>
       <Layout>
         <section className="section-padding bg-gradient-to-b from-secondary/50 to-background">
           <div className="container-custom">
             <div className="grid lg:grid-cols-2 gap-12 items-start">
               <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} className="lg:sticky lg:top-24">
                 <span className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">Join Us</span>
-                <h1 className="text-4xl sm:text-5xl font-display font-bold mb-6">Become an <span className="gradient-text">ASAC</span> Member</h1>
+                <h1 className="text-4xl sm:text-5xl font-display font-bold mb-6">Become an <span className="gradient-text">AHSAC</span> Member</h1>
                 <p className="text-lg text-muted-foreground mb-8">Join Al-Hikmah University students committed to championing the SDGs. Create your account to access exclusive member features.</p>
                 <div className="flex items-center gap-4 mb-8">
-                  <img src={asacLogo} alt="ASAC Logo" className="w-16 h-16 rounded-full object-cover ring-2 ring-primary/20" />
-                  <div><p className="font-display font-semibold">ASAC Registration</p><p className="text-sm text-muted-foreground">Quick & Easy Process</p></div>
+                  <img src={ahsacLogo} alt="AHSAC Logo" className="w-16 h-16 rounded-full object-cover ring-2 ring-primary/20" />
+                  <div><p className="font-display font-semibold">AHSAC Registration</p><p className="text-sm text-muted-foreground">Quick & Easy Process</p></div>
                 </div>
                 <p className="text-sm text-muted-foreground">
                   Already a member? <Link to="/member-login" className="text-primary hover:underline">Log in here</Link>
@@ -332,6 +326,18 @@ const Register = () => {
                       <Label htmlFor="password" className="flex items-center gap-2"><Lock className="h-4 w-4" />Password</Label>
                       <Input id="password" type="password" placeholder="Create a password" {...register("password")} className={errors.password ? "border-destructive" : ""} />
                       {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
+                    </div>
+
+                    {/* Gender Selection */}
+                    <div className="space-y-2">
+                      <Label className="flex items-center gap-2"><Users className="h-4 w-4" />Gender</Label>
+                      <Select onValueChange={(value) => setValue("gender", value)}>
+                        <SelectTrigger className={errors.gender ? "border-destructive" : ""}><SelectValue placeholder="Select your gender" /></SelectTrigger>
+                        <SelectContent className="bg-card">
+                          {GENDERS.map((g) => <SelectItem key={g.value} value={g.value}>{g.label}</SelectItem>)}
+                        </SelectContent>
+                      </Select>
+                      {errors.gender && <p className="text-sm text-destructive">{errors.gender.message}</p>}
                     </div>
                     
                     <div className="space-y-2">

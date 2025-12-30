@@ -3,7 +3,7 @@ import { ArrowRight, Users, Target, Globe } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
-import asacLogo from "@/assets/asac-logo.jpg";
+import ahsacLogo from "@/assets/asac-logo.jpg";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 20 },
@@ -96,7 +96,7 @@ export const HeroSection = () => {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="text-lg sm:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0 mb-8"
             >
-              Join ASAC in our mission to advocate for the 17 UN Sustainable Development Goals and create meaningful impact in our community and beyond.
+              Join AHSAC in our mission to advocate for the 17 UN Sustainable Development Goals and create meaningful impact in our community and beyond.
             </motion.p>
 
             <motion.div
@@ -114,7 +114,7 @@ export const HeroSection = () => {
               ) : (
                 <Link to="/register">
                   <Button variant="hero" size="xl" className="w-full sm:w-auto">
-                    Join ASAC Today
+                    Join AHSAC Today
                     <ArrowRight className="h-5 w-5" />
                   </Button>
                 </Link>
@@ -169,8 +169,8 @@ export const HeroSection = () => {
               </motion.div>
               
               <motion.img
-                src={asacLogo}
-                alt="ASAC - SDG Advocacy Club Logo"
+                src={ahsacLogo}
+                alt="AHSAC - SDG Advocacy Club Logo"
                 className="relative w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96 rounded-full object-cover shadow-2xl ring-4 ring-card"
                 animate={{ y: [0, -10, 0] }}
                 transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}

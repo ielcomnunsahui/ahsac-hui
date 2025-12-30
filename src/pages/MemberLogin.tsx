@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader2, Mail, Lock, Users } from "lucide-react";
-import asacLogo from "@/assets/asac-logo.jpg";
+import ahsacLogo from "@/assets/asac-logo.jpg";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email").max(255),
@@ -61,7 +61,7 @@ const MemberLogin = () => {
   return (
     <>
       <Helmet>
-        <title>Member Login | ASAC</title>
+        <title>Member Login | AHSAC</title>
       </Helmet>
       <Layout>
         <section className="section-padding min-h-[70vh] flex items-center justify-center bg-gradient-to-b from-secondary/50 to-background">
@@ -80,19 +80,19 @@ const MemberLogin = () => {
                 Member Login
               </h1>
               <p className="text-muted-foreground">
-                Access your ASAC member dashboard
+                Access your AHSAC member dashboard
               </p>
             </div>
 
             <div className="p-6 sm:p-8 rounded-2xl bg-card border border-border shadow-lg">
               <div className="flex items-center gap-4 mb-6 pb-6 border-b border-border">
                 <img
-                  src={asacLogo}
-                  alt="ASAC Logo"
+                  src={ahsacLogo}
+                  alt="AHSAC Logo"
                   className="w-12 h-12 rounded-full object-cover"
                 />
                 <div>
-                  <p className="font-display font-semibold">ASAC Member Portal</p>
+                  <p className="font-display font-semibold">AHSAC Member Portal</p>
                   <p className="text-sm text-muted-foreground">Dashboard Access</p>
                 </div>
               </div>
