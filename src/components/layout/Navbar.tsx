@@ -52,13 +52,13 @@ export const Navbar = () => {
           <Link to="/" className="flex items-center gap-3 group">
             <motion.img
               src={asacLogo}
-              alt="ASAC Logo"
+              alt="AHSAC Logo"
               className="h-10 w-10 sm:h-12 sm:w-12 rounded-full object-cover ring-2 ring-primary/20 group-hover:ring-primary/40 transition-all"
               whileHover={{ scale: 1.05 }}
             />
             <div className="hidden sm:block">
               <p className="font-display font-bold text-foreground text-sm sm:text-base">
-                ASAC
+                AHSAC
               </p>
               <p className="text-xs text-muted-foreground">
                 SDG Advocacy Club

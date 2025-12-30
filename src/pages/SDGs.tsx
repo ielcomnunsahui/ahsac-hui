@@ -28,10 +28,10 @@ const SDGs = () => {
   return (
     <>
       <Helmet>
-        <title>The 17 SDGs - Sustainable Development Goals | ASAC</title>
+        <title>The 17 SDGs - Sustainable Development Goals | AHSAC</title>
         <meta
           name="description"
-          content="Explore the 17 United Nations Sustainable Development Goals. Learn how ASAC advocates for each goal at Al-Hikmah University."
+          content="Explore the 17 United Nations Sustainable Development Goals. Learn how AHSAC advocates for each goal at Al-Hikmah University."
         />
       </Helmet>
       <Layout>
@@ -118,7 +118,7 @@ const SDGs = () => {
                 Join Us in Achieving These Goals
               </h2>
               <p className="text-muted-foreground max-w-2xl mx-auto mb-8">
-                Every action counts. Become a member of ASAC and contribute to sustainable development at Al-Hikmah University and beyond.
+                Every action counts. Become a member of AHSAC and contribute to sustainable development at Al-Hikmah University and beyond.
               </p>
               <Button variant="hero" size="xl" asChild>
                 <a href="/register">Become a Member</a>

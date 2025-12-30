@@ -32,11 +32,11 @@ export const Footer = () => {
             <Link to="/" className="flex items-center gap-3 mb-4">
               <img
                 src={asacLogo}
-                alt="ASAC Logo"
+                alt="AHSAC Logo"
                 className="h-12 w-12 rounded-full object-cover"
               />
               <div>
-                <p className="font-display font-bold text-lg">ASAC</p>
+                <p className="font-display font-bold text-lg">AHSAC</p>
                 <p className="text-sm text-background/60">SDG Advocacy Club</p>
               </div>
             </Link>
@@ -52,7 +52,7 @@ export const Footer = () => {
               {[
                 { href: "/about", label: "About Us" },
                 { href: "/sdgs", label: "The SDGs" },
-                { href: "/register", label: "Join ASAC" },
+                { href: "/register", label: "Join AHSAC" },
                 { href: "/feedback", label: "Feedback" },
               ].map((link) => (
                 <li key={link.href}>
@@ -114,7 +114,7 @@ export const Footer = () => {
         <div className="mt-12 pt-8 border-t border-background/10">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-background/60 text-sm">
-              © {new Date().getFullYear()} ASAC - Al-Hikmah University. All rights reserved.
+              © {new Date().getFullYear()} AHSAC - Al-Hikmah University. All rights reserved.
             </p>
             <p className="text-background/60 text-sm flex items-center gap-1">
               Made with <Heart className="h-4 w-4 text-sdg-red fill-sdg-red" /> for a sustainable future

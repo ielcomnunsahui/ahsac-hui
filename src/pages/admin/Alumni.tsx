@@ -148,7 +148,7 @@ const Alumni = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `asac_alumni_${new Date().toISOString().split("T")[0]}.csv`;
+    a.download = `ahsac_alumni_${new Date().toISOString().split("T")[0]}.csv`;
     a.click();
     URL.revokeObjectURL(url);
     toast.success("Alumni exported successfully");
@@ -170,7 +170,7 @@ const Alumni = () => {
   return (
     <>
       <Helmet>
-        <title>Alumni | ASAC Admin</title>
+        <title>Alumni | AHSAC Admin</title>
       </Helmet>
       <AdminLayout>
         <div className="space-y-6">

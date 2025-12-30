@@ -210,7 +210,7 @@ const MemberDashboard = () => {
   return (
     <>
       <Helmet>
-        <title>Member Dashboard | ASAC</title>
+        <title>Member Dashboard | AHSAC</title>
       </Helmet>
       <Layout>
         <section className="section-padding bg-gradient-to-b from-secondary/50 to-background min-h-screen">
@@ -225,7 +225,7 @@ const MemberDashboard = () => {
                   <h1 className="text-3xl font-display font-bold">
                     Welcome, {memberData?.full_name || user.user_metadata?.full_name || 'Member'}!
                   </h1>
-                  <p className="text-muted-foreground">Your ASAC member dashboard</p>
+                  <p className="text-muted-foreground">Your AHSAC member dashboard</p>
                 </div>
                 <Button variant="outline" onClick={handleLogout}>
                   <LogOut className="h-4 w-4 mr-2" />
@@ -262,7 +262,7 @@ const MemberDashboard = () => {
                             </Button>
                           )}
                         </div>
-                        <CardDescription>Your ASAC membership details</CardDescription>
+                        <CardDescription>Your AHSAC membership details</CardDescription>
                       </CardHeader>
                       <CardContent>
                         {memberData ? (
@@ -390,7 +390,7 @@ const MemberDashboard = () => {
                         <Button variant="outline" className="w-full justify-start" asChild>
                           <Link to="/about">
                             <User className="h-4 w-4 mr-2" />
-                            About ASAC
+                            About AHSAC
                           </Link>
                         </Button>
                       </CardContent>
@@ -409,7 +409,7 @@ const MemberDashboard = () => {
                         <div className="flex items-center justify-between flex-wrap gap-4">
                           <div>
                             <h3 className="font-display font-semibold text-lg">Membership Status</h3>
-                            <p className="text-sm text-muted-foreground">You're an active ASAC member</p>
+                            <p className="text-sm text-muted-foreground">You're an active AHSAC member</p>
                           </div>
                           <Badge className="bg-sdg-green text-white text-sm px-4 py-1">Active Member</Badge>
                         </div>

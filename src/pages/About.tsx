@@ -80,10 +80,10 @@ const About = () => {
   return (
     <>
       <Helmet>
-        <title>About ASAC - Our Mission, Vision & Objectives</title>
+        <title>About AHSAC - Our Mission, Vision & Objectives</title>
         <meta
           name="description"
-          content="Learn about ASAC's mission to champion the UN Sustainable Development Goals at Al-Hikmah University. Discover our vision, objectives, and founding members."
+          content="Learn about AHSAC's mission to champion the UN Sustainable Development Goals at Al-Hikmah University. Discover our vision, objectives, and founding members."
         />
       </Helmet>
       <Layout>
@@ -103,7 +103,7 @@ const About = () => {
                   Championing <span className="gradient-text">Sustainable</span> Futures
                 </h1>
                 <p className="text-lg text-muted-foreground mb-6">
-                  {settings?.about || "The Al-Hikmah University SDG Advocacy Club (ASAC) was founded with a clear purpose: to mobilize students towards understanding and contributing to the United Nations' 2030 Agenda for Sustainable Development."}
+                  {settings?.about || "The Al-Hikmah University SDG Advocacy Club (AHSAC) was founded with a clear purpose: to mobilize students towards understanding and contributing to the United Nations' 2030 Agenda for Sustainable Development."}
                 </p>
                 <p className="text-muted-foreground">
                   Since our establishment, we have grown into a vibrant community of passionate advocates working together to create meaningful change in our university and beyond.
@@ -118,7 +118,7 @@ const About = () => {
               >
                 <img
                   src={asacLogo}
-                  alt="ASAC Logo"
+                  alt="AHSAC Logo"
                   className="w-64 h-64 sm:w-80 sm:h-80 rounded-2xl object-cover shadow-2xl"
                 />
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-primary/20 to-transparent" />
@@ -234,7 +234,7 @@ const About = () => {
             >
               <h2 className="text-3xl sm:text-4xl font-display font-bold mb-4">Founding Members</h2>
               <p className="text-muted-foreground max-w-2xl mx-auto">
-                Meet the visionaries who established ASAC and continue to guide our mission.
+                Meet the visionaries who established AHSAC and continue to guide our mission.
               </p>
             </motion.div>
 

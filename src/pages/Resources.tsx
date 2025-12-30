@@ -84,16 +84,16 @@ const Resources = () => {
   return (
     <Layout>
       <Helmet>
-        <title>Resources | ASAC - SDG Advocacy Club</title>
+        <title>Resources | AHSAC - SDG Advocacy Club</title>
         <meta name="description" content="Access valuable resources for learning about and advocating for the UN Sustainable Development Goals. Find guides, reports, and tools to support your SDG journey." />
         <meta
           name="keywords"
           content="SDG Resources, Sustainable Development Goals, UN Resources, SDG Guides, SDG Reports, SDG Tools, Sustainability Resources, Climate Action Resources, Al-Hikmah University"
         />
-        <meta property="og:title" content="Resources | ASAC - SDG Advocacy Club" />
+        <meta property="og:title" content="Resources | AHSAC - SDG Advocacy Club" />
         <meta property="og:description" content="Access valuable resources for learning about and advocating for the UN Sustainable Development Goals. Find guides, reports, and tools to support your SDG journey." />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://asac-hui.vercel.app/resources" />
+        <meta property="og:url" content="https://ahsac-hui.vercel.app/resources" />
       </Helmet>
 
       <div className="section-padding pt-24 min-h-screen">

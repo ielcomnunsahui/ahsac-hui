@@ -232,7 +232,7 @@ const Analytics = () => {
   return (
     <>
       <Helmet>
-        <title>Analytics | ASAC Admin</title>
+        <title>Analytics | AHSAC Admin</title>
       </Helmet>
       <AdminLayout>
         <div className="space-y-6">

@@ -457,7 +457,7 @@ const AcademicStructure = () => {
   return (
     <>
       <Helmet>
-        <title>Academic Structure | ASAC Admin</title>
+        <title>Academic Structure | AHSAC Admin</title>
       </Helmet>
       <AdminLayout>
         <div className="space-y-6">

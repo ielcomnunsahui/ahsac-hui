@@ -119,7 +119,7 @@ const Settings = () => {
   return (
     <>
       <Helmet>
-        <title>Settings | ASAC Admin</title>
+        <title>Settings | AHSAC Admin</title>
       </Helmet>
       <AdminLayout>
         <div className="space-y-6 max-w-4xl">

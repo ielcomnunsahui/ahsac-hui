@@ -234,7 +234,7 @@ const EventDetails = () => {
     return (
       <Layout>
         <Helmet>
-          <title>Event Not Found | ASAC</title>
+          <title>Event Not Found | AHSAC</title>
         </Helmet>
         <div className="section-padding pt-24 min-h-screen">
           <div className="container-custom text-center">
@@ -263,7 +263,7 @@ const EventDetails = () => {
   return (
     <Layout>
       <Helmet>
-        <title>{event.title} | ASAC Events</title>
+        <title>{event.title} | AHSAC Events</title>
         <meta name="description" content={event.description || `Join us for ${event.title}`} />
       </Helmet>
 

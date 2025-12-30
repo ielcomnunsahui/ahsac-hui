@@ -337,8 +337,8 @@ const Events = () => {
   return (
     <Layout>
       <Helmet>
-        <title>Events | ASAC - SDG Advocacy Club</title>
-        <meta name="description" content="Discover and register for upcoming ASAC events. Join us in advocating for the UN Sustainable Development Goals." />
+        <title>Events | AHSAC - SDG Advocacy Club</title>
+        <meta name="description" content="Discover and register for upcoming AHSAC events. Join us in advocating for the UN Sustainable Development Goals." />
       </Helmet>
 
       <div className="section-padding pt-24 min-h-screen">
@@ -351,7 +351,7 @@ const Events = () => {
           >
             <Badge variant="secondary" className="mb-4">Our Events</Badge>
             <h1 className="text-4xl md:text-5xl font-display font-bold mb-4">
-              ASAC <span className="gradient-text">Events</span>
+              AHSAC <span className="gradient-text">Events</span>
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Join us at our events and be part of the movement to achieve the 

@@ -44,7 +44,7 @@ export const CTASection = () => {
               Ready to Make a Difference?
             </h2>
             <p className="text-lg opacity-90 mb-8">
-              Join hundreds of students committed to creating positive change. Become a member of ASAC today and be part of the movement towards a sustainable future.
+              Join hundreds of students committed to creating positive change. Become a member of AHSAC today and be part of the movement towards a sustainable future.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Link to="/register">
