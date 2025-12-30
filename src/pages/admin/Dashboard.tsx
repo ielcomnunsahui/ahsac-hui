@@ -85,13 +85,13 @@ const Dashboard = () => {
   return (
     <>
       <Helmet>
-        <title>Admin Dashboard | ASAC</title>
+        <title>Admin Dashboard | AHSAC</title>
       </Helmet>
       <AdminLayout>
         <div className="space-y-8">
           <div>
             <h1 className="text-3xl font-display font-bold">Dashboard</h1>
-            <p className="text-muted-foreground">Welcome to the ASAC admin panel</p>
+            <p className="text-muted-foreground">Welcome to the AHSAC admin panel</p>
           </div>
 
           {/* Stats Cards */}

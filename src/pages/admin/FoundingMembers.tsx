@@ -260,7 +260,7 @@ const FoundingMembers = () => {
               id="bio"
               value={formData.bio}
               onChange={(e) => handleInputChange('bio', e.target.value)}
-              placeholder="Write a short bio about this member. Include their achievements, interests, or contributions to ASAC..."
+              placeholder="Write a short bio about this member. Include their achievements, interests, or contributions to AHSAC..."
               rows={4}
               className="resize-none"
             />
@@ -310,7 +310,7 @@ const FoundingMembers = () => {
   return (
     <>
       <Helmet>
-        <title>Founding Members | ASAC Admin</title>
+        <title>Founding Members | AHSAC Admin</title>
       </Helmet>
       <AdminLayout>
         <div className="space-y-6">
@@ -351,7 +351,7 @@ const FoundingMembers = () => {
                 <User className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
                 <h3 className="font-semibold text-lg mb-2">No Founding Members Yet</h3>
                 <p className="text-muted-foreground mb-4">
-                  Start adding the founding members of ASAC to showcase them on your website.
+                  Start adding the founding members of AHSAC to showcase them on your website.
                 </p>
                 <Button onClick={() => setIsAddDialogOpen(true)}>
                   <Plus className="h-4 w-4 mr-2" />

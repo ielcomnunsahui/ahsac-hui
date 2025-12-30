@@ -63,14 +63,14 @@ export const AboutSection = () => {
           className="text-center max-w-3xl mx-auto mb-16"
         >
           <span className="inline-block px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
-            About ASAC
+            About AHSAC
           </span>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold mb-6">
             Driving Change Through{" "}
             <span className="gradient-text">Sustainable Action</span>
           </h2>
           <p className="text-lg text-muted-foreground">
-            The Al-Hikmah University SDG Advocacy Club (ASAC) is a student-led organization dedicated to promoting awareness and action towards achieving the United Nations Sustainable Development Goals.
+            The Al-Hikmah University SDG Advocacy Club (AHSAC) is a student-led organization dedicated to promoting awareness and action towards achieving the United Nations Sustainable Development Goals.
           </p>
         </motion.div>
 

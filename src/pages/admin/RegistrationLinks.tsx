@@ -234,7 +234,7 @@ Register here: {LINK}
   return (
     <>
       <Helmet>
-        <title>Registration Links | ASAC Admin</title>
+        <title>Registration Links | AHSAC Admin</title>
       </Helmet>
       <AdminLayout>
         <div className="space-y-6">

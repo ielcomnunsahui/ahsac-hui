@@ -99,7 +99,7 @@ const Auth = () => {
   return (
     <>
       <Helmet>
-        <title>{isLogin ? "Admin Login" : "Admin Sign Up"} | ASAC</title>
+        <title>{isLogin ? "Admin Login" : "Admin Sign Up"} | AHSAC</title>
       </Helmet>
       <Layout>
         <section className="section-padding min-h-[70vh] flex items-center justify-center bg-gradient-to-b from-secondary/50 to-background">
@@ -126,11 +126,11 @@ const Auth = () => {
               <div className="flex items-center gap-4 mb-6 pb-6 border-b border-border">
                 <img
                   src={asacLogo}
-                  alt="ASAC Logo"
+                  alt="AHSAC Logo"
                   className="w-12 h-12 rounded-full object-cover"
                 />
                 <div>
-                  <p className="font-display font-semibold">ASAC Admin</p>
+                  <p className="font-display font-semibold">AHSAC Admin</p>
                   <p className="text-sm text-muted-foreground">Dashboard Access</p>
                 </div>
               </div>

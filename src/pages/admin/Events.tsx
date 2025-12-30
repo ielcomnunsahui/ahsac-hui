@@ -342,14 +342,14 @@ const Events = () => {
   return (
     <>
       <Helmet>
-        <title>Events | ASAC Admin</title>
+        <title>Events | AHSAC Admin</title>
       </Helmet>
       <AdminLayout>
         <div className="space-y-6">
           <div className="flex justify-between items-start">
             <div>
               <h1 className="text-3xl font-display font-bold">Event Management</h1>
-              <p className="text-muted-foreground">Create and manage ASAC events</p>
+              <p className="text-muted-foreground">Create and manage AHSAC events</p>
             </div>
             <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
               <DialogTrigger asChild>
@@ -361,7 +361,7 @@ const Events = () => {
               <DialogContent className="max-h-[90vh]">
                 <DialogHeader>
                   <DialogTitle>Create New Event</DialogTitle>
-                  <DialogDescription>Add a new ASAC event.</DialogDescription>
+                  <DialogDescription>Add a new AHSAC event.</DialogDescription>
                 </DialogHeader>
                 <ScrollArea className="max-h-[60vh] pr-4">
                   <EventForm

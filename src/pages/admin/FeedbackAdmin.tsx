@@ -111,7 +111,7 @@ const FeedbackAdmin = () => {
   return (
     <>
       <Helmet>
-        <title>Feedback | ASAC Admin</title>
+        <title>Feedback | AHSAC Admin</title>
       </Helmet>
       <AdminLayout>
         <div className="space-y-6">

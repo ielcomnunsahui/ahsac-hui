@@ -51,11 +51,11 @@ export const AdminSidebar = () => {
         <div className="flex items-center gap-3">
           <img
             src={asacLogo}
-            alt="ASAC Logo"
+            alt="AHSAC Logo"
             className="w-10 h-10 rounded-full object-cover"
           />
           <div className="flex-1 min-w-0">
-            <p className="font-display font-bold text-sm truncate">ASAC Admin</p>
+            <p className="font-display font-bold text-sm truncate">AHSAC Admin</p>
             <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
           </div>
         </div>
