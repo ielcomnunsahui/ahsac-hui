@@ -264,6 +264,12 @@ All tables have RLS enabled with policies:
    - Search by name or matric number
    - Click to check in member
 
+4. **Printable Attendance Sheet**
+   - Generate professional attendance sheets
+   - Includes event details, attendee list, and signature column
+   - Extra blank rows for manual entries
+   - Print directly from browser
+
 #### Implementation
 
 **Member Side** (`src/components/MemberQRCode.tsx`):
@@ -274,6 +280,14 @@ All tables have RLS enabled with policies:
 - Uses `html5-qrcode` for camera scanning
 - Real-time attendance list
 - Duplicate check-in prevention
+- Print button for attendance sheet
+
+**Printable Sheet** (`src/components/admin/PrintableAttendanceSheet.tsx`):
+- Professional layout with AHSAC branding
+- Event details section
+- Attendance table with serial numbers
+- Signature column for verification
+- Empty rows for walk-in attendees
 
 ### Member Management
 
@@ -330,6 +344,20 @@ All tables have RLS enabled with policies:
 2. Select the event
 3. Use camera to scan member QR codes
 4. Or search manually by name/matric
+5. Click "Print Sheet" to generate printable attendance
+
+### Printing Attendance Sheets
+
+1. Check in attendees for the event
+2. Click "Print Sheet" button in attendance section
+3. A new window opens with formatted sheet
+4. Print dialog appears automatically
+5. Sheets include:
+   - AHSAC logo and header
+   - Event details (title, date, location)
+   - Numbered attendance list
+   - Signature column
+   - Extra blank rows for manual additions
 
 ### Managing Academic Structure
 
@@ -479,6 +507,8 @@ Required in production:
 | 1.1.0 | 2024 | Added QR check-in system |
 | 1.2.0 | 2024 | Added bulk member actions |
 | 1.3.0 | 2024 | Added analytics dashboards |
+| 1.4.0 | 2025 | Added printable attendance sheets |
+| 1.5.0 | 2025 | Updated branding to AHSAC |
 
 ---
 

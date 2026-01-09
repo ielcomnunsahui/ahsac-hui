@@ -1,0 +1,125 @@
+import { forwardRef } from "react";
+import { format } from "date-fns";
+import asacLogo from "@/assets/asac-logo.jpg";
+
+interface AttendanceRecord {
+  id: string;
+  member_id: string;
+  checked_in_at: string;
+  members: {
+    full_name: string;
+    matric_number: string;
+  } | null;
+}
+
+interface PrintableAttendanceSheetProps {
+  eventTitle: string;
+  eventDate: string;
+  eventLocation?: string | null;
+  attendance: AttendanceRecord[];
+}
+
+export const PrintableAttendanceSheet = forwardRef<HTMLDivElement, PrintableAttendanceSheetProps>(
+  ({ eventTitle, eventDate, eventLocation, attendance }, ref) => {
+    return (
+      <div ref={ref} className="p-8 bg-white text-black min-h-[11in]">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-6 border-b-2 border-black pb-4">
+          <div className="flex items-center gap-4">
+            <img
+              src={asacLogo}
+              alt="AHSAC Logo"
+              className="h-16 w-16 rounded-full object-cover"
+            />
+            <div>
+              <h1 className="text-xl font-bold">AL-HIKMAH UNIVERSITY SDG ADVOCACY CLUB</h1>
+              <p className="text-sm text-gray-600">AHSAC - Event Attendance Sheet</p>
+            </div>
+          </div>
+          <div className="text-right text-sm">
+            <p>Printed: {format(new Date(), "PPP p")}</p>
+          </div>
+        </div>
+
+        {/* Event Details */}
+        <div className="mb-6 p-4 bg-gray-100 rounded">
+          <h2 className="text-lg font-bold mb-2">Event Details</h2>
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <span className="font-semibold">Event:</span> {eventTitle}
+            </div>
+            <div>
+              <span className="font-semibold">Date:</span> {format(new Date(eventDate), "PPPP")}
+            </div>
+            <div>
+              <span className="font-semibold">Time:</span> {format(new Date(eventDate), "p")}
+            </div>
+            {eventLocation && (
+              <div>
+                <span className="font-semibold">Location:</span> {eventLocation}
+              </div>
+            )}
+            <div>
+              <span className="font-semibold">Total Attendance:</span> {attendance.length}
+            </div>
+          </div>
+        </div>
+
+        {/* Attendance Table */}
+        <table className="w-full border-collapse text-sm">
+          <thead>
+            <tr className="bg-gray-800 text-white">
+              <th className="border border-gray-400 px-3 py-2 text-left w-12">S/N</th>
+              <th className="border border-gray-400 px-3 py-2 text-left">Full Name</th>
+              <th className="border border-gray-400 px-3 py-2 text-left">Matric Number</th>
+              <th className="border border-gray-400 px-3 py-2 text-left">Check-in Time</th>
+              <th className="border border-gray-400 px-3 py-2 text-left w-24">Signature</th>
+            </tr>
+          </thead>
+          <tbody>
+            {attendance.map((record, index) => (
+              <tr key={record.id} className={index % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                <td className="border border-gray-400 px-3 py-2">{index + 1}</td>
+                <td className="border border-gray-400 px-3 py-2 font-medium">
+                  {record.members?.full_name || "Unknown"}
+                </td>
+                <td className="border border-gray-400 px-3 py-2">
+                  {record.members?.matric_number || "N/A"}
+                </td>
+                <td className="border border-gray-400 px-3 py-2">
+                  {format(new Date(record.checked_in_at), "h:mm a")}
+                </td>
+                <td className="border border-gray-400 px-3 py-2"></td>
+              </tr>
+            ))}
+            {/* Add empty rows for manual entries if needed */}
+            {attendance.length < 30 && 
+              Array.from({ length: Math.min(10, 30 - attendance.length) }).map((_, index) => (
+                <tr key={`empty-${index}`} className={(attendance.length + index) % 2 === 0 ? "bg-white" : "bg-gray-50"}>
+                  <td className="border border-gray-400 px-3 py-2">{attendance.length + index + 1}</td>
+                  <td className="border border-gray-400 px-3 py-2"></td>
+                  <td className="border border-gray-400 px-3 py-2"></td>
+                  <td className="border border-gray-400 px-3 py-2"></td>
+                  <td className="border border-gray-400 px-3 py-2"></td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+
+        {/* Footer */}
+        <div className="mt-8 pt-4 border-t border-gray-300 text-sm text-gray-600">
+          <div className="flex justify-between">
+            <p>AHSAC - Al-Hikmah University SDG Advocacy Club</p>
+            <p>Page 1 of 1</p>
+          </div>
+          <p className="mt-2 text-center text-xs">
+            This attendance sheet was generated by the AHSAC Event Management System
+          </p>
+        </div>
+      </div>
+    );
+  }
+);
+
+PrintableAttendanceSheet.displayName = "PrintableAttendanceSheet";

@@ -77,7 +77,7 @@ export const Footer = () => {
               </li>
               <li className="flex items-center gap-3 text-sm text-background/70">
                 <Mail className="h-4 w-4 shrink-0" />
-                <span>asac@alhikmah.edu.ng</span>
+                <span>ahsac@alhikmah.edu.ng</span>
               </li>
               <li className="flex items-center gap-3 text-sm text-background/70">
                 <Phone className="h-4 w-4 shrink-0" />

@@ -11,6 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { PrintableAttendanceSheet } from "@/components/admin/PrintableAttendanceSheet";
 import { 
   QrCode, 
   Camera, 
@@ -21,7 +22,8 @@ import {
   Loader2,
   Search,
   UserCheck,
-  AlertCircle
+  AlertCircle,
+  Printer
 } from "lucide-react";
 import { format } from "date-fns";
 import { Html5Qrcode } from "html5-qrcode";
@@ -64,6 +66,7 @@ const EventCheckIn = () => {
   const [searching, setSearching] = useState(false);
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const readerRef = useRef<HTMLDivElement>(null);
+  const printRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     fetchEvents();
@@ -277,6 +280,37 @@ const EventCheckIn = () => {
     }
   };
 
+  const handlePrint = () => {
+    if (!printRef.current || !selectedEvent) return;
+    
+    const printContent = printRef.current.innerHTML;
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) return;
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Attendance Sheet - ${selectedEvent.title}</title>
+          <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body { font-family: Arial, sans-serif; }
+            @media print {
+              body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            }
+          </style>
+        </head>
+        <body>${printContent}</body>
+      </html>
+    `);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => {
+      printWindow.print();
+      printWindow.close();
+    }, 250);
+  };
+
   const selectedEvent = events.find(e => e.id === selectedEventId);
 
   return (
@@ -444,9 +478,17 @@ const EventCheckIn = () => {
                       {attendance.length} member{attendance.length !== 1 ? "s" : ""} checked in
                     </CardDescription>
                   </div>
-                  <Badge variant="secondary" className="text-lg px-4 py-1">
-                    {attendance.length}
-                  </Badge>
+                  <div className="flex items-center gap-2">
+                    {attendance.length > 0 && (
+                      <Button variant="outline" onClick={handlePrint}>
+                        <Printer className="h-4 w-4 mr-2" />
+                        Print Sheet
+                      </Button>
+                    )}
+                    <Badge variant="secondary" className="text-lg px-4 py-1">
+                      {attendance.length}
+                    </Badge>
+                  </div>
                 </div>
               </CardHeader>
               <CardContent>
@@ -485,6 +527,19 @@ const EventCheckIn = () => {
               </CardContent>
             </Card>
           )}
+
+          {/* Hidden Printable Sheet */}
+          <div className="hidden">
+            {selectedEvent && (
+              <PrintableAttendanceSheet
+                ref={printRef}
+                eventTitle={selectedEvent.title}
+                eventDate={selectedEvent.start_date}
+                eventLocation={selectedEvent.location}
+                attendance={attendance}
+              />
+            )}
+          </div>
         </div>
       </AdminLayout>
     </>
