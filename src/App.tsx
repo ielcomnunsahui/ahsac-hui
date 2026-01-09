@@ -28,6 +28,7 @@ import Analytics from "./pages/admin/Analytics";
 import AcademicStructure from "./pages/admin/AcademicStructure";
 import Alumni from "./pages/admin/Alumni";
 import Events from "./pages/admin/Events";
+import EventCheckIn from "./pages/admin/EventCheckIn";
 import Resources from "./pages/Resources";
 import Contact from "./pages/Contact";
 import Team from "./pages/Team";
@@ -67,6 +68,7 @@ const App = () => (
               <Route path="/admin/academic-structure" element={<ProtectedRoute><AcademicStructure /></ProtectedRoute>} />
               <Route path="/admin/alumni" element={<ProtectedRoute><Alumni /></ProtectedRoute>} />
               <Route path="/admin/events" element={<ProtectedRoute><Events /></ProtectedRoute>} />
+              <Route path="/admin/event-check-in" element={<ProtectedRoute><EventCheckIn /></ProtectedRoute>} />
               <Route path="/admin/feedback" element={<ProtectedRoute><FeedbackAdmin /></ProtectedRoute>} />
               <Route path="/admin/founding-members" element={<ProtectedRoute><FoundingMembers /></ProtectedRoute>} />
               <Route path="/admin/registration-links" element={<ProtectedRoute><RegistrationLinks /></ProtectedRoute>} />

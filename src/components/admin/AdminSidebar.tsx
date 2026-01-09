@@ -14,7 +14,8 @@ import {
   Building2,
   UserMinus,
   Calendar,
-  Home
+  Home,
+  QrCode
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -30,6 +31,7 @@ const navItems = [
   { to: "/admin/academic-structure", icon: Building2, label: "Academic Structure" },
   { to: "/admin/alumni", icon: UserMinus, label: "Alumni" },
   { to: "/admin/events", icon: Calendar, label: "Events" },
+  { to: "/admin/event-check-in", icon: QrCode, label: "Event Check-in" },
   { to: "/admin/feedback", icon: MessageSquare, label: "Feedback" },
   { to: "/admin/founding-members", icon: UserCog, label: "Founding Members" },
   { to: "/admin/registration-links", icon: Link2, label: "Registration Links" },

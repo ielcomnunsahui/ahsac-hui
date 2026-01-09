@@ -26,8 +26,10 @@ import {
   Save,
   X,
   CalendarCheck,
-  CheckCircle
+  CheckCircle,
+  QrCode
 } from "lucide-react";
+import { MemberQRCode } from "@/components/MemberQRCode";
 import { format } from "date-fns";
 
 interface MemberData {
@@ -397,12 +399,27 @@ const MemberDashboard = () => {
                     </Card>
                   </motion.div>
 
+                  {/* QR Code Card */}
+                  {memberData && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3 }}
+                    >
+                      <MemberQRCode
+                        memberId={memberData.id}
+                        memberName={memberData.full_name}
+                        matricNumber={memberData.matric_number}
+                      />
+                    </motion.div>
+                  )}
+
                   {/* Membership Status Card */}
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 }}
-                    className="md:col-span-2"
+                    transition={{ delay: 0.4 }}
+                    className={memberData ? "" : "md:col-span-2"}
                   >
                     <Card className="bg-gradient-to-r from-primary/10 to-sdg-teal/10 border-primary/20">
                       <CardContent className="py-6">

@@ -1,73 +1,132 @@
-# Welcome to your Lovable project
+# Al-Hikmah University SDG Advocacy Club (AHSAC)
 
-## Project info
+A comprehensive web application for managing the Al-Hikmah University SDG Advocacy Club (AHSAC), built with modern web technologies.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## 🌍 About AHSAC
 
-## How can I edit this code?
+The Al-Hikmah University SDG Advocacy Club is dedicated to promoting and advancing the United Nations Sustainable Development Goals (SDGs) within the university community and beyond.
 
-There are several ways of editing your application.
+## ✨ Features
 
-**Use Lovable**
+### Public Features
+- **Homepage** - Overview of AHSAC with upcoming events and testimonials
+- **Events** - Browse and register for upcoming club events
+- **SDGs Information** - Learn about the 17 Sustainable Development Goals
+- **Resources** - Access educational materials and resources
+- **Member Registration** - Join AHSAC as a member
+- **Feedback & Testimonials** - Share experiences and feedback
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+### Member Features
+- **Member Dashboard** - Personal profile and activity overview
+- **QR Code Check-in** - Unique QR code for event attendance tracking
+- **Event Registration** - Register for upcoming events
+- **Attendance History** - View past event participation
 
-Changes made via Lovable will be committed automatically to this repo.
+### Admin Features
+- **Dashboard** - Overview of club statistics
+- **Analytics** - Member demographics, gender distribution, department analytics
+- **Member Management** - Add, edit, bulk actions (delete, move to alumni, update level)
+- **Contact Export** - Export member contacts to CSV, vCard, Google Contacts
+- **Event Management** - Create, edit, publish events
+- **QR Code Check-in System** - Scan member QR codes for quick attendance
+- **Academic Structure** - Manage colleges, faculties, and departments
+- **Alumni Management** - Track graduated members
+- **Feedback Moderation** - Approve/reject member feedback
+- **Founding Members** - Manage founding member profiles
+- **Registration Links** - Generate shareable registration links
+- **Organization Settings** - Configure club information
 
-**Use your preferred IDE**
+## 🛠️ Tech Stack
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- **Frontend**: React 18, TypeScript, Vite
+- **Styling**: Tailwind CSS, shadcn/ui
+- **Animation**: Framer Motion
+- **State Management**: TanStack Query (React Query)
+- **Database**: Supabase (PostgreSQL)
+- **Authentication**: Supabase Auth
+- **QR Code**: qrcode.react, html5-qrcode
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## 🚀 Getting Started
 
-Follow these steps:
+### Prerequisites
+- Node.js 18+ or Bun
+- Supabase account (for backend)
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### Installation
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd ahsac-website
 ```
 
-**Edit a file directly in GitHub**
+2. Install dependencies:
+```bash
+npm install
+# or
+bun install
+```
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+3. Set up environment variables:
+```bash
+cp .env.example .env
+```
 
-**Use GitHub Codespaces**
+Add your Supabase credentials:
+```env
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+4. Start the development server:
+```bash
+npm run dev
+# or
+bun dev
+```
 
-## What technologies are used for this project?
+5. Open [http://localhost:5173](http://localhost:5173) in your browser.
 
-This project is built with:
+## 📖 Documentation
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+For comprehensive documentation, see [DOCUMENTATION.md](./DOCUMENTATION.md).
 
-## How can I deploy this project?
+## 📁 Project Structure
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+```
+src/
+├── components/           # Reusable UI components
+│   ├── admin/           # Admin-specific components
+│   ├── layout/          # Layout components (Navbar, Footer)
+│   ├── sections/        # Homepage sections
+│   └── ui/              # shadcn/ui components
+├── hooks/               # Custom React hooks
+├── integrations/        # Third-party integrations
+│   └── supabase/        # Supabase client and types
+├── lib/                 # Utility functions
+├── pages/               # Page components
+│   └── admin/           # Admin pages
+└── assets/              # Static assets
+```
 
-## Can I connect a custom domain to my Lovable project?
+## 🔐 Security
 
-Yes, you can!
+- Row Level Security (RLS) enabled on all tables
+- Role-based access control (Admin/User)
+- Secure authentication via Supabase Auth
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## 📄 License
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📧 Contact
+
+For questions or support, please contact the AHSAC team.
+
+---
+
+Built with ❤️ for the Al-Hikmah University community
