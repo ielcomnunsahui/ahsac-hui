@@ -67,6 +67,8 @@ src/
 │   │   ├── TestimonialsSection.tsx
 │   │   └── UpcomingEventsSection.tsx
 │   ├── MemberQRCode.tsx    # QR code component
+│   ├── ScrollToTopButton.tsx # Scroll to top button
+│   ├── ThemeToggle.tsx     # Dark mode toggle
 │   └── ui/                 # shadcn/ui components
 ├── hooks/
 │   ├── use-mobile.tsx
@@ -499,6 +501,79 @@ Required in production:
 
 ---
 
+## UI/UX Features
+
+### Dark Mode
+
+The application supports light and dark themes with smooth transitions:
+
+1. **Theme Toggle**
+   - Located in the navigation bar
+   - Uses `next-themes` for persistence
+   - Smooth icon rotation animation
+   - Automatic system preference detection
+
+2. **Theme Transition**
+   - CSS-based smooth color transitions
+   - Background, text, and border colors transition smoothly
+   - Duration: 300ms ease transition
+
+### Scroll to Top Button
+
+A floating button appears when scrolling down:
+
+1. **Visibility**
+   - Appears after scrolling 300px
+   - Fade and scale animation on show/hide
+
+2. **Functionality**
+   - Smooth scroll to top of page
+   - Fixed position in bottom-right corner
+   - Accessible with ARIA label
+
+### Mobile Responsiveness
+
+The application is fully optimized for mobile devices:
+
+1. **Hero Section**
+   - Reduced padding for mobile (pt-16 vs pt-24)
+   - Responsive font sizes
+   - Properly spaced buttons
+
+2. **Navigation**
+   - Collapsible mobile menu
+   - Theme toggle in mobile menu
+   - Touch-friendly button sizes
+
+3. **General**
+   - Responsive grid layouts
+   - Mobile-optimized spacing
+   - Touch-friendly interactive elements
+
+---
+
+## Contact Form
+
+### Email Integration
+
+The contact form sends emails to the AHSAC team using Resend:
+
+1. **Validation**
+   - Client-side validation with Zod schema
+   - Input length limits and format checking
+
+2. **Email Sending**
+   - Uses Supabase Edge Function
+   - Sends to: sdgadvocacyclubhui@gmail.com
+   - Includes sender's reply-to email
+
+3. **User Feedback**
+   - Loading state during submission
+   - Success/error toast notifications
+   - Form reset on successful send
+
+---
+
 ## Version History
 
 | Version | Date | Changes |
@@ -509,6 +584,10 @@ Required in production:
 | 1.3.0 | 2024 | Added analytics dashboards |
 | 1.4.0 | 2025 | Added printable attendance sheets |
 | 1.5.0 | 2025 | Updated branding to AHSAC |
+| 1.6.0 | 2025 | Added dark mode with smooth transitions |
+| 1.7.0 | 2025 | Improved mobile responsiveness |
+| 1.8.0 | 2025 | Added scroll-to-top button |
+| 1.9.0 | 2025 | Added contact form email integration |
 
 ---
 
