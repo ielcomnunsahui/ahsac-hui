@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, User, BookOpen, Users, Calendar, Mail } from "lucide-react";
+import { Menu, X, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import asacLogo from "@/assets/asac-logo.jpg";
 
 const navLinks = [
@@ -83,8 +84,9 @@ export const Navbar = () => {
             ))}
           </div>
 
-          {/* CTA Button */}
-          <div className="hidden md:flex items-center gap-3">
+          {/* CTA Button & Theme Toggle */}
+          <div className="hidden md:flex items-center gap-2">
+            <ThemeToggle />
             {!isLoading && user ? (
               <Link to="/member-dashboard">
                 <Button variant="outline" size="default">
@@ -140,16 +142,17 @@ export const Navbar = () => {
                   {link.label}
                 </Link>
               ))}
-              <div className="pt-2">
+              <div className="pt-2 flex items-center gap-2">
+                <ThemeToggle />
                 {!isLoading && user ? (
-                  <Link to="/member-dashboard" className="block">
+                  <Link to="/member-dashboard" className="block flex-1">
                     <Button variant="outline" className="w-full">
                       <User className="h-4 w-4 mr-2" />
                       Dashboard
                     </Button>
                   </Link>
                 ) : (
-                  <Link to="/register" className="block">
+                  <Link to="/register" className="block flex-1">
                     <Button variant="hero" className="w-full">
                       Join Us
                     </Button>
