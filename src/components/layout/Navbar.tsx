@@ -142,22 +142,24 @@ export const Navbar = () => {
                   {link.label}
                 </Link>
               ))}
-              <div className="pt-2 flex items-center gap-2">
+              <div className="pt-4 border-t border-border flex items-center gap-3">
                 <ThemeToggle />
-                {!isLoading && user ? (
-                  <Link to="/member-dashboard" className="block flex-1">
-                    <Button variant="outline" className="w-full">
-                      <User className="h-4 w-4 mr-2" />
-                      Dashboard
-                    </Button>
-                  </Link>
-                ) : (
-                  <Link to="/register" className="block flex-1">
-                    <Button variant="hero" className="w-full">
-                      Join Us
-                    </Button>
-                  </Link>
-                )}
+                <div className="flex-1">
+                  {!isLoading && user ? (
+                    <Link to="/member-dashboard" className="block">
+                      <Button variant="outline" className="w-full">
+                        <User className="h-4 w-4 mr-2" />
+                        Dashboard
+                      </Button>
+                    </Link>
+                  ) : (
+                    <Link to="/register" className="block">
+                      <Button variant="hero" className="w-full">
+                        Join Us
+                      </Button>
+                    </Link>
+                  )}
+                </div>
               </div>
             </div>
           </motion.div>
