@@ -9,6 +9,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/admin/ProtectedRoute";
 import { ScrollToTop } from "@/components/ScrollToTop";
+import { ScrollToTopButton } from "@/components/ScrollToTopButton";
 import Index from "./pages/Index";
 import About from "./pages/About";
 import SDGs from "./pages/SDGs";
@@ -49,6 +50,7 @@ const App = () => {
             <Sonner />
           <BrowserRouter>
             <ScrollToTop />
+            <ScrollToTopButton />
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/about" element={<About />} />
