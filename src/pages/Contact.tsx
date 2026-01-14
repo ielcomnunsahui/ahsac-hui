@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { Layout } from "@/components/layout/Layout";
-import { Mail, MapPin, Phone, Clock, Send, User, MessageSquare, Loader2 } from "lucide-react";
+import { Mail, MapPin, Phone, Clock, Send, User, MessageSquare, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,13 +10,16 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { z } from "zod";
+import { SEO } from "@/components/SEO";
 
 const contactSchema = z.object({
   name: z.string().trim().min(1, "Name is required").max(100, "Name must be less than 100 characters"),
-  email: z.string().trim().email("Invalid email address").max(255, "Email must be less than 255 characters"),
+  email: z.string().trim().email("Please enter a valid email address").max(255, "Email must be less than 255 characters"),
   subject: z.string().trim().min(1, "Subject is required").max(200, "Subject must be less than 200 characters"),
-  message: z.string().trim().min(1, "Message is required").max(2000, "Message must be less than 2000 characters"),
+  message: z.string().trim().min(10, "Message must be at least 10 characters").max(2000, "Message must be less than 2000 characters"),
 });
+
+type FormErrors = Partial<Record<keyof z.infer<typeof contactSchema>, string>>;
 
 const contactInfo = [
   {
@@ -55,25 +57,51 @@ const Contact = () => {
     subject: "",
     message: "",
   });
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+
+  const validateField = (field: keyof typeof formData, value: string) => {
+    const fieldSchema = contactSchema.shape[field];
+    const result = fieldSchema.safeParse(value);
+    if (!result.success) {
+      return result.error.errors[0]?.message || "Invalid input";
+    }
+    return undefined;
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
     setFormData(prev => ({ ...prev, [id]: value }));
+    
+    // Validate on change if field has been touched
+    if (touched[id]) {
+      const error = validateField(id as keyof typeof formData, value);
+      setErrors(prev => ({ ...prev, [id]: error }));
+    }
+  };
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { id, value } = e.target;
+    setTouched(prev => ({ ...prev, [id]: true }));
+    const error = validateField(id as keyof typeof formData, value);
+    setErrors(prev => ({ ...prev, [id]: error }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validate form data
+    // Validate all fields
     const result = contactSchema.safeParse(formData);
     if (!result.success) {
-      const errors = result.error.flatten().fieldErrors;
-      const firstError = Object.values(errors)[0]?.[0];
-      toast({
-        title: "Validation Error",
-        description: firstError || "Please check your input",
-        variant: "destructive",
+      const fieldErrors: FormErrors = {};
+      result.error.errors.forEach(err => {
+        const field = err.path[0] as keyof FormErrors;
+        if (!fieldErrors[field]) {
+          fieldErrors[field] = err.message;
+        }
       });
+      setErrors(fieldErrors);
+      setTouched({ name: true, email: true, subject: true, message: true });
       return;
     }
 
@@ -93,6 +121,8 @@ const Contact = () => {
 
       // Reset form
       setFormData({ name: "", email: "", subject: "", message: "" });
+      setErrors({});
+      setTouched({});
     } catch (error: any) {
       console.error("Error sending message:", error);
       toast({
@@ -105,20 +135,28 @@ const Contact = () => {
     }
   };
 
+  const InputError = ({ error }: { error?: string }) => {
+    if (!error) return null;
+    return (
+      <motion.p 
+        initial={{ opacity: 0, y: -5 }} 
+        animate={{ opacity: 1, y: 0 }} 
+        className="text-sm text-destructive flex items-center gap-1 mt-1"
+      >
+        <AlertCircle className="h-3 w-3" />
+        {error}
+      </motion.p>
+    );
+  };
+
   return (
     <Layout>
-      <Helmet>
-        <title>Contact Us | AHSAC - SDG Advocacy Club</title>
-        <meta name="description" content="Get in touch with the AHSAC team. Contact us for inquiries, partnerships, or to learn more about our sustainable development initiatives." />
-        <meta
-          name="keywords"
-          content="AHSAC Contact, SDG Advocacy Club, Contact AHSAC, Sustainability Contact, Al-Hikmah University Contact, SDG Inquiries"
-        />
-        <meta property="og:title" content="Contact Us | AHSAC - SDG Advocacy Club" />
-        <meta property="og:description" content="Get in touch with the AHSAC team. Contact us for inquiries, partnerships, or to learn more about our sustainable development initiatives." />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://asac-hui.vercel.app/contact" />
-      </Helmet>
+      <SEO
+        title="Contact Us | AHSAC - SDG Advocacy Club"
+        description="Get in touch with the AHSAC team. Contact us for inquiries, partnerships, or to learn more about our sustainable development initiatives at Al-Hikmah University."
+        keywords="AHSAC Contact, SDG Advocacy Club, Contact AHSAC, Sustainability Contact, Al-Hikmah University Contact, SDG Inquiries"
+        path="/contact"
+      />
 
       <div className="section-padding pt-24 min-h-screen">
         <div className="container-custom">
@@ -187,59 +225,64 @@ const Contact = () => {
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="name">Full Name</Label>
+                        <Label htmlFor="name">Full Name <span className="text-destructive">*</span></Label>
                         <div className="relative">
                           <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                           <Input 
                             id="name" 
                             placeholder="Enter your full name" 
-                            className="pl-10" 
+                            className={`pl-10 ${errors.name && touched.name ? "border-destructive focus-visible:ring-destructive" : ""}`}
                             value={formData.name}
                             onChange={handleInputChange}
-                            required
+                            onBlur={handleBlur}
                           />
                         </div>
+                        <InputError error={touched.name ? errors.name : undefined} />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="email">Email Address</Label>
+                        <Label htmlFor="email">Email Address <span className="text-destructive">*</span></Label>
                         <div className="relative">
                           <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                           <Input 
                             id="email" 
                             type="email" 
                             placeholder="Enter your email" 
-                            className="pl-10" 
+                            className={`pl-10 ${errors.email && touched.email ? "border-destructive focus-visible:ring-destructive" : ""}`}
                             value={formData.email}
                             onChange={handleInputChange}
-                            required
+                            onBlur={handleBlur}
                           />
                         </div>
+                        <InputError error={touched.email ? errors.email : undefined} />
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="subject">Subject</Label>
+                      <Label htmlFor="subject">Subject <span className="text-destructive">*</span></Label>
                       <Input 
                         id="subject" 
                         placeholder="What is this regarding?" 
+                        className={errors.subject && touched.subject ? "border-destructive focus-visible:ring-destructive" : ""}
                         value={formData.subject}
                         onChange={handleInputChange}
-                        required
+                        onBlur={handleBlur}
                       />
+                      <InputError error={touched.subject ? errors.subject : undefined} />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="message">Message</Label>
+                      <Label htmlFor="message">Message <span className="text-destructive">*</span></Label>
                       <div className="relative">
                         <MessageSquare className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
                         <Textarea 
                           id="message" 
-                          placeholder="Type your message here..." 
-                          className="pl-10 min-h-[150px]" 
+                          placeholder="Type your message here (minimum 10 characters)..." 
+                          className={`pl-10 min-h-[150px] ${errors.message && touched.message ? "border-destructive focus-visible:ring-destructive" : ""}`}
                           rows={5}
                           value={formData.message}
                           onChange={handleInputChange}
-                          required
+                          onBlur={handleBlur}
                         />
                       </div>
+                      <InputError error={touched.message ? errors.message : undefined} />
                     </div>
                     <Button className="w-full" size="lg" type="submit" disabled={isSubmitting}>
                       {isSubmitting ? (

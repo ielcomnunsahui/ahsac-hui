@@ -1,11 +1,11 @@
-import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { Layout } from "@/components/layout/Layout";
-import { Users, GraduationCap, Award, Mail, Linkedin, Twitter, Github } from "lucide-react";
+import { Users, Award, Mail, Linkedin, Twitter } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { SEO } from "@/components/SEO";
 
 interface FoundingMember {
   id: string;
@@ -42,18 +42,12 @@ const Team = () => {
 
   return (
     <Layout>
-      <Helmet>
-        <title>Meet Our Team | ASAC - SDG Advocacy Club</title>
-        <meta name="description" content="Get to know the dedicated team behind the ASAC SDG Advocacy Club. Meet our passionate students working towards sustainable development goals." />
-        <meta
-          name="keywords"
-          content="ASAC Team, SDG Advocacy Club Team, Sustainability Team, Al-Hikmah University Students, SDG Leaders, Environmental Advocates"
-        />
-        <meta property="og:title" content="Meet Our Team | ASAC - SDG Advocacy Club" />
-        <meta property="og:description" content="Get to know the dedicated team behind the ASAC SDG Advocacy Club. Meet our passionate students working towards sustainable development goals." />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://asac-hui.vercel.app/team" />
-      </Helmet>
+      <SEO
+        title="Meet Our Team | AHSAC - SDG Advocacy Club"
+        description="Get to know the dedicated team behind AHSAC. Meet our passionate students working towards sustainable development goals at Al-Hikmah University."
+        keywords="AHSAC Team, SDG Advocacy Club Team, Sustainability Team, Al-Hikmah University Students, SDG Leaders, Environmental Advocates"
+        path="/team"
+      />
 
       <div className="section-padding pt-24 min-h-screen">
         <div className="container-custom">
@@ -164,7 +158,7 @@ const Team = () => {
                       
                       <div className="flex gap-2 pt-2 justify-center">
                         <a 
-                          href={`mailto:${member.name.replace(/\s+/g, '.').toLowerCase()}@asac-hui.org`}
+                          href={`mailto:${member.name.replace(/\s+/g, '.').toLowerCase()}@ahsachui.org`}
                           className="p-2 rounded-md bg-muted hover:bg-muted/80 transition-colors"
                           title="Email"
                         >

@@ -1,4 +1,3 @@
-import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { Layout } from "@/components/layout/Layout";
@@ -8,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { MessageCircle, Star, Lightbulb, Loader2, Quote } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { SEO } from "@/components/SEO";
 
 const typeConfig = {
   feedback: { icon: MessageCircle, label: "Feedback", color: "bg-sdg-blue" },
@@ -35,10 +35,12 @@ const Testimonials = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Testimonials & Feedback | ASAC</title>
-        <meta name="description" content="Read what members and supporters say about ASAC - Al-Hikmah University SDG Advocacy Club." />
-      </Helmet>
+      <SEO
+        title="Testimonials & Feedback | AHSAC"
+        description="Read what members and supporters say about AHSAC - Al-Hikmah University SDG Advocacy Club. See testimonials and recommendations from our community."
+        keywords="AHSAC Testimonials, SDG Advocacy Feedback, Student Reviews, AHSAC Reviews, Community Voices"
+        path="/testimonials"
+      />
       <Layout>
         <section className="section-padding bg-gradient-to-b from-secondary/50 to-background">
           <div className="container-custom">
@@ -54,7 +56,7 @@ const Testimonials = () => {
                 What People Are <span className="gradient-text">Saying</span>
               </h1>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Hear from our members, partners, and supporters about their experiences with ASAC.
+                Hear from our members, partners, and supporters about their experiences with AHSAC.
               </p>
             </motion.div>
 
@@ -70,7 +72,7 @@ const Testimonials = () => {
               >
                 <Quote className="h-16 w-16 mx-auto text-muted-foreground/30 mb-6" />
                 <h2 className="text-2xl font-display font-bold mb-4">No Testimonials Yet</h2>
-                <p className="text-muted-foreground mb-8">Be the first to share your experience with ASAC!</p>
+                <p className="text-muted-foreground mb-8">Be the first to share your experience with AHSAC!</p>
                 <Button variant="hero" asChild>
                   <Link to="/feedback">Share Your Feedback</Link>
                 </Button>

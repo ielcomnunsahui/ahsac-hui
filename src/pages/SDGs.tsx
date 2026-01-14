@@ -1,8 +1,8 @@
-import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { Layout } from "@/components/layout/Layout";
 import { ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { SEO } from "@/components/SEO";
 
 const sdgGoals = [
   { number: 1, name: "No Poverty", color: "#E5243B", description: "End poverty in all its forms everywhere.", icon: "https://sdgs.un.org/sites/default/files/goals/E_SDG_Icons-01.jpg" },
@@ -27,13 +27,12 @@ const sdgGoals = [
 const SDGs = () => {
   return (
     <>
-      <Helmet>
-        <title>The 17 SDGs - Sustainable Development Goals | AHSAC</title>
-        <meta
-          name="description"
-          content="Explore the 17 United Nations Sustainable Development Goals. Learn how AHSAC advocates for each goal at Al-Hikmah University."
-        />
-      </Helmet>
+      <SEO
+        title="The 17 SDGs - Sustainable Development Goals | AHSAC"
+        description="Explore the 17 United Nations Sustainable Development Goals. Learn how AHSAC advocates for each goal at Al-Hikmah University."
+        keywords="17 SDGs, Sustainable Development Goals, UN 2030 Agenda, AHSAC SDG Advocacy, Climate Action, No Poverty, Zero Hunger"
+        path="/sdgs"
+      />
       <Layout>
         {/* Hero */}
         <section className="section-padding bg-gradient-to-b from-primary/5 to-background">

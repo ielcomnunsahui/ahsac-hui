@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,7 +10,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { MessageCircle, Star, Lightbulb, Send, CheckCircle, Loader2 } from "lucide-react";
+import { MessageCircle, Star, Lightbulb, Send, CheckCircle, Loader2, AlertCircle } from "lucide-react";
+import { SEO } from "@/components/SEO";
 
 const feedbackTypes = [
   { id: "feedback", label: "General Feedback", icon: MessageCircle, color: "bg-sdg-blue" },
@@ -20,10 +20,10 @@ const feedbackTypes = [
 ];
 
 const feedbackSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters").max(100),
-  email: z.string().email("Please enter a valid email").max(255),
+  name: z.string().min(2, "Name must be at least 2 characters").max(100, "Name must be less than 100 characters"),
+  email: z.string().email("Please enter a valid email address").max(255, "Email must be less than 255 characters"),
   type: z.enum(["feedback", "testimonial", "recommendation"]),
-  message: z.string().min(10, "Message must be at least 10 characters").max(1000),
+  message: z.string().min(10, "Message must be at least 10 characters").max(1000, "Message must be less than 1000 characters"),
 });
 
 type FeedbackFormData = z.infer<typeof feedbackSchema>;
@@ -34,9 +34,10 @@ const Feedback = () => {
   const [isSuccess, setIsSuccess] = useState(false);
   const { toast } = useToast();
 
-  const { register, handleSubmit, setValue, formState: { errors }, reset } = useForm<FeedbackFormData>({
+  const { register, handleSubmit, setValue, formState: { errors, touchedFields }, reset, trigger } = useForm<FeedbackFormData>({
     resolver: zodResolver(feedbackSchema),
     defaultValues: { type: "feedback" },
+    mode: "onBlur",
   });
 
   const onSubmit = async (data: FeedbackFormData) => {
@@ -62,10 +63,28 @@ const Feedback = () => {
     setSelectedType("feedback");
   };
 
+  const InputError = ({ error }: { error?: string }) => {
+    if (!error) return null;
+    return (
+      <motion.p 
+        initial={{ opacity: 0, y: -5 }} 
+        animate={{ opacity: 1, y: 0 }} 
+        className="text-sm text-destructive flex items-center gap-1 mt-1"
+      >
+        <AlertCircle className="h-3 w-3" />
+        {error}
+      </motion.p>
+    );
+  };
+
   if (isSuccess) {
     return (
       <>
-        <Helmet><title>Feedback Received | ASAC</title></Helmet>
+        <SEO
+          title="Feedback Received | AHSAC"
+          description="Thank you for your feedback. We appreciate your input and will use it to improve AHSAC."
+          path="/feedback"
+        />
         <Layout>
           <section className="section-padding min-h-[70vh] flex items-center justify-center">
             <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center max-w-md mx-auto">
@@ -84,7 +103,12 @@ const Feedback = () => {
 
   return (
     <>
-      <Helmet><title>Feedback & Testimonials | ASAC</title></Helmet>
+      <SEO
+        title="Feedback & Testimonials | AHSAC"
+        description="Share your feedback, testimonials, or recommendations with AHSAC. Your input helps us improve our SDG advocacy initiatives."
+        keywords="AHSAC Feedback, SDG Testimonials, AHSAC Recommendations, Share Feedback, Student Feedback"
+        path="/feedback"
+      />
       <Layout>
         <section className="section-padding bg-gradient-to-b from-secondary/50 to-background">
           <div className="container-custom max-w-3xl">
@@ -110,19 +134,39 @@ const Feedback = () => {
 
               <div className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Your Name</Label>
-                  <Input id="name" placeholder="Enter your name" {...register("name")} className={errors.name ? "border-destructive" : ""} />
-                  {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
+                  <Label htmlFor="name">Your Name <span className="text-destructive">*</span></Label>
+                  <Input 
+                    id="name" 
+                    placeholder="Enter your name" 
+                    {...register("name")} 
+                    className={errors.name && touchedFields.name ? "border-destructive focus-visible:ring-destructive" : ""} 
+                    onBlur={() => trigger("name")}
+                  />
+                  <InputError error={touchedFields.name ? errors.name?.message : undefined} />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email Address</Label>
-                  <Input id="email" type="email" placeholder="your@email.com" {...register("email")} className={errors.email ? "border-destructive" : ""} />
-                  {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
+                  <Label htmlFor="email">Email Address <span className="text-destructive">*</span></Label>
+                  <Input 
+                    id="email" 
+                    type="email" 
+                    placeholder="your@email.com" 
+                    {...register("email")} 
+                    className={errors.email && touchedFields.email ? "border-destructive focus-visible:ring-destructive" : ""} 
+                    onBlur={() => trigger("email")}
+                  />
+                  <InputError error={touchedFields.email ? errors.email?.message : undefined} />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="message">Your Message</Label>
-                  <Textarea id="message" placeholder="Share your thoughts..." rows={5} {...register("message")} className={errors.message ? "border-destructive" : ""} />
-                  {errors.message && <p className="text-sm text-destructive">{errors.message.message}</p>}
+                  <Label htmlFor="message">Your Message <span className="text-destructive">*</span></Label>
+                  <Textarea 
+                    id="message" 
+                    placeholder="Share your thoughts (minimum 10 characters)..." 
+                    rows={5} 
+                    {...register("message")} 
+                    className={errors.message && touchedFields.message ? "border-destructive focus-visible:ring-destructive" : ""} 
+                    onBlur={() => trigger("message")}
+                  />
+                  <InputError error={touchedFields.message ? errors.message?.message : undefined} />
                 </div>
                 <Button type="submit" variant="hero" size="lg" className="w-full" disabled={isSubmitting}>
                   {isSubmitting ? <><Loader2 className="h-5 w-5 animate-spin" />Submitting...</> : <><Send className="h-5 w-5" />Submit</>}

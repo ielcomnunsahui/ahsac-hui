@@ -1,10 +1,10 @@
-import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { Layout } from "@/components/layout/Layout";
-import { BookOpen, Download, ExternalLink, Globe, Users, Target, Lightbulb, FileText, Link as LinkIcon } from "lucide-react";
+import { BookOpen, ExternalLink, Globe, Users, Target, Lightbulb, FileText, Link as LinkIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { SEO } from "@/components/SEO";
 
 const resources = [
   {
@@ -83,18 +83,12 @@ const additionalResources = [
 const Resources = () => {
   return (
     <Layout>
-      <Helmet>
-        <title>Resources | AHSAC - SDG Advocacy Club</title>
-        <meta name="description" content="Access valuable resources for learning about and advocating for the UN Sustainable Development Goals. Find guides, reports, and tools to support your SDG journey." />
-        <meta
-          name="keywords"
-          content="SDG Resources, Sustainable Development Goals, UN Resources, SDG Guides, SDG Reports, SDG Tools, Sustainability Resources, Climate Action Resources, Al-Hikmah University"
-        />
-        <meta property="og:title" content="Resources | AHSAC - SDG Advocacy Club" />
-        <meta property="og:description" content="Access valuable resources for learning about and advocating for the UN Sustainable Development Goals. Find guides, reports, and tools to support your SDG journey." />
-        <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://ahsac-hui.vercel.app/resources" />
-      </Helmet>
+      <SEO
+        title="Resources | AHSAC - SDG Advocacy Club"
+        description="Access valuable resources for learning about and advocating for the UN Sustainable Development Goals. Find guides, reports, and tools to support your SDG journey."
+        keywords="SDG Resources, Sustainable Development Goals, UN Resources, SDG Guides, SDG Reports, SDG Tools, Sustainability Resources, Climate Action Resources"
+        path="/resources"
+      />
 
       <div className="section-padding pt-24 min-h-screen">
         <div className="container-custom">

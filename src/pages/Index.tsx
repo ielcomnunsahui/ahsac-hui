@@ -1,4 +1,3 @@
-import { Helmet } from "react-helmet-async";
 import { Layout } from "@/components/layout/Layout";
 import { HeroSection } from "@/components/sections/HeroSection";
 import { AboutSection } from "@/components/sections/AboutSection";
@@ -8,21 +7,17 @@ import { motion } from "framer-motion";
 import { UpcomingEventsSection } from "@/components/sections/UpcomingEventsSection";
 import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
 import { CTASection } from "@/components/sections/CTASection";
+import { SEO } from "@/components/SEO";
 
 const Index = () => {
   return (
     <>
-      <Helmet>
-        <title>AHSAC - Al-Hikmah University SDG Advocacy Club</title>
-        <meta
-          name="description"
-          content="Join AHSAC, Al-Hikmah University's SDG Advocacy Club. We champion the 17 Sustainable Development Goals through education, advocacy, and community action."
-        />
-        <meta
-          name="keywords"
-          content="AHSAC, SDG, Sustainable Development Goals, Al-Hikmah University, Student Club, Advocacy"
-        />
-      </Helmet>
+      <SEO
+        title="AHSAC - Al-Hikmah University SDG Advocacy Club"
+        description="Join AHSAC, Al-Hikmah University's SDG Advocacy Club. We champion the 17 Sustainable Development Goals through education, advocacy, and community action."
+        keywords="AHSAC, SDG, Sustainable Development Goals, Al-Hikmah University, Student Club, Advocacy, Nigeria, sustainability"
+        path="/"
+      />
       <Layout>
         <HeroSection />
         <AboutSection />

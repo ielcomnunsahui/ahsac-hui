@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { Layout } from "@/components/layout/Layout";
 import { Target, Eye, Users, BookOpen, Megaphone, Heart, Loader2, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import asacLogo from "@/assets/asac-logo.jpg";
+import { SEO } from "@/components/SEO";
 
 interface FoundingMember {
   id: string;
@@ -79,13 +79,12 @@ const About = () => {
 
   return (
     <>
-      <Helmet>
-        <title>About AHSAC - Our Mission, Vision & Objectives</title>
-        <meta
-          name="description"
-          content="Learn about AHSAC's mission to champion the UN Sustainable Development Goals at Al-Hikmah University. Discover our vision, objectives, and founding members."
-        />
-      </Helmet>
+      <SEO
+        title="About AHSAC - Our Mission, Vision & Objectives"
+        description="Learn about AHSAC's mission to champion the UN Sustainable Development Goals at Al-Hikmah University. Discover our vision, objectives, and founding members."
+        keywords="About AHSAC, AHSAC Mission, AHSAC Vision, SDG Advocacy, Al-Hikmah University, Sustainable Development, Founding Members"
+        path="/about"
+      />
       <Layout>
         {/* Hero */}
         <section className="section-padding bg-gradient-to-b from-secondary/50 to-background">
