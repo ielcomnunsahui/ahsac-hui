@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { SEO } from "@/components/SEO";
 import { useSearchParams, Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
@@ -288,7 +288,12 @@ const Register = () => {
 
   return (
     <>
-      <Helmet><title>Join AHSAC - Member Registration</title></Helmet>
+      <SEO
+        title="Join AHSAC - Member Registration"
+        description="Register to become a member of AHSAC, Al-Hikmah University's SDG Advocacy Club. Join students championing the UN Sustainable Development Goals."
+        keywords="AHSAC Registration, Join AHSAC, SDG Club Membership, Al-Hikmah University, Student Registration"
+        path="/register"
+      />
       <Layout>
         <section className="section-padding bg-gradient-to-b from-secondary/50 to-background">
           <div className="container-custom">

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
 import { format, isPast, isFuture, isToday } from "date-fns";
 import { Calendar, MapPin, Users, Clock, CheckCircle, AlertCircle, Download, ArrowRight } from "lucide-react";
@@ -16,6 +15,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { downloadICSFile } from "@/lib/calendar";
+import { SEO } from "@/components/SEO";
 
 interface Event {
   id: string;
@@ -336,10 +336,12 @@ const Events = () => {
 
   return (
     <Layout>
-      <Helmet>
-        <title>Events | AHSAC - SDG Advocacy Club</title>
-        <meta name="description" content="Discover and register for upcoming AHSAC events. Join us in advocating for the UN Sustainable Development Goals." />
-      </Helmet>
+      <SEO
+        title="Events | AHSAC - SDG Advocacy Club"
+        description="Discover and register for upcoming AHSAC events. Join us in advocating for the UN Sustainable Development Goals at Al-Hikmah University."
+        keywords="AHSAC Events, SDG Events, Sustainable Development Events, Al-Hikmah University Events, SDG Advocacy"
+        path="/events"
+      />
 
       <div className="section-padding pt-24 min-h-screen">
         <div className="container-custom">
