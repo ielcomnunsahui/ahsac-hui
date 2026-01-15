@@ -1,5 +1,15 @@
 import { Helmet } from "react-helmet-async";
 
+interface EventData {
+  name: string;
+  description?: string;
+  startDate: string;
+  endDate?: string;
+  location?: string;
+  image?: string;
+  url: string;
+}
+
 interface SEOProps {
   title: string;
   description: string;
@@ -8,6 +18,7 @@ interface SEOProps {
   image?: string;
   type?: "website" | "article";
   noindex?: boolean;
+  event?: EventData;
 }
 
 const SITE_URL = "https://ahsachui.org";
@@ -46,6 +57,44 @@ const organizationSchema = {
   }
 };
 
+// Generate event JSON-LD
+const generateEventSchema = (event: EventData) => ({
+  "@context": "https://schema.org",
+  "@type": "Event",
+  "name": event.name,
+  "description": event.description || `Join AHSAC for ${event.name}`,
+  "startDate": event.startDate,
+  "endDate": event.endDate || event.startDate,
+  "eventStatus": "https://schema.org/EventScheduled",
+  "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+  "location": event.location ? {
+    "@type": "Place",
+    "name": event.location,
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Ilorin",
+      "addressRegion": "Kwara State",
+      "addressCountry": "Nigeria"
+    }
+  } : {
+    "@type": "Place",
+    "name": "Al-Hikmah University",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "Ilorin",
+      "addressRegion": "Kwara State",
+      "addressCountry": "Nigeria"
+    }
+  },
+  "image": event.image ? (event.image.startsWith("http") ? event.image : `${SITE_URL}${event.image}`) : `${SITE_URL}/favicon.jpg`,
+  "organizer": {
+    "@type": "Organization",
+    "name": "Al-Hikmah University SDG Advocacy Club",
+    "url": SITE_URL
+  },
+  "url": event.url
+});
+
 export const SEO = ({
   title,
   description,
@@ -54,9 +103,16 @@ export const SEO = ({
   image = DEFAULT_IMAGE,
   type = "website",
   noindex = false,
+  event,
 }: SEOProps) => {
   const fullUrl = `${SITE_URL}${path}`;
   const imageUrl = image.startsWith("http") ? image : `${SITE_URL}${image}`;
+
+  // Combine schemas
+  const schemas: object[] = [organizationSchema];
+  if (event) {
+    schemas.push(generateEventSchema(event));
+  }
 
   return (
     <Helmet>
@@ -68,7 +124,7 @@ export const SEO = ({
       {noindex && <meta name="robots" content="noindex, nofollow" />}
 
       {/* Open Graph / Facebook */}
-      <meta property="og:type" content={type} />
+      <meta property="og:type" content={event ? "event" : type} />
       <meta property="og:url" content={fullUrl} />
       <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
@@ -89,9 +145,11 @@ export const SEO = ({
       <meta property="og:image:alt" content={`${title} - AHSAC Logo`} />
 
       {/* JSON-LD Structured Data */}
-      <script type="application/ld+json">
-        {JSON.stringify(organizationSchema)}
-      </script>
+      {schemas.map((schema, index) => (
+        <script key={index} type="application/ld+json">
+          {JSON.stringify(schema)}
+        </script>
+      ))}
     </Helmet>
   );
 };

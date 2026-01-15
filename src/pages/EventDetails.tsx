@@ -269,6 +269,15 @@ const EventDetails = () => {
         description={event.description || `Join us for ${event.title}`}
         path={`/events/${id}`}
         image={event.image_url || undefined}
+        event={{
+          name: event.title,
+          description: event.description || undefined,
+          startDate: event.start_date,
+          endDate: event.end_date || undefined,
+          location: event.location || undefined,
+          image: event.image_url || undefined,
+          url: `https://ahsachui.org/events/${id}`
+        }}
       />
 
       <div className="section-padding pt-24 min-h-screen">
