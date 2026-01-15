@@ -242,7 +242,7 @@ const Register = () => {
   if (isValidLink === false) {
     return (
       <>
-        <Helmet><title>Invalid Registration Link | AHSAC</title></Helmet>
+        <SEO title="Invalid Registration Link | AHSAC" description="This registration link is invalid or has been deactivated." path="/register" />
         <Layout>
           <section className="section-padding min-h-[70vh] flex items-center justify-center">
             <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center max-w-md mx-auto">
@@ -264,7 +264,7 @@ const Register = () => {
   if (isSuccess) {
     return (
       <>
-        <Helmet><title>Registration Successful | AHSAC</title></Helmet>
+        <SEO title="Registration Successful | AHSAC" description="Welcome to AHSAC! Your membership registration is complete." path="/register" />
         <Layout>
           <section className="section-padding min-h-[70vh] flex items-center justify-center">
             <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center max-w-md mx-auto">
