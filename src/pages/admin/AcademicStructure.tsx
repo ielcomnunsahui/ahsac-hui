@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Helmet } from "react-helmet-async";
+import SEO from "@/components/SEO";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
@@ -456,9 +456,12 @@ const AcademicStructure = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Academic Structure | AHSAC Admin</title>
-      </Helmet>
+      <SEO 
+        title="Academic Structure | AHSAC Admin"
+        description="Manage colleges, faculties, and departments."
+        path="/admin/academic-structure"
+        noindex
+      />
       <AdminLayout>
         <div className="space-y-6">
           <div className="flex flex-col sm:flex-row justify-between items-start gap-4">

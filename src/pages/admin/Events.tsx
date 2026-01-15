@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Helmet } from "react-helmet-async";
+import SEO from "@/components/SEO";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
@@ -341,9 +341,12 @@ const Events = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Events | AHSAC Admin</title>
-      </Helmet>
+      <SEO 
+        title="Events | AHSAC Admin"
+        description="Manage AHSAC events and registrations."
+        path="/admin/events"
+        noindex
+      />
       <AdminLayout>
         <div className="space-y-6">
           <div className="flex justify-between items-start">

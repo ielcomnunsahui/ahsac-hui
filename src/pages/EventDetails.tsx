@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Helmet } from "react-helmet-async";
+import SEO from "@/components/SEO";
 import { motion } from "framer-motion";
 import { format, isPast } from "date-fns";
 import { 
@@ -233,9 +233,11 @@ const EventDetails = () => {
   if (!event) {
     return (
       <Layout>
-        <Helmet>
-          <title>Event Not Found | AHSAC</title>
-        </Helmet>
+        <SEO 
+          title="Event Not Found | AHSAC"
+          description="This event doesn't exist or is no longer available."
+          path={`/events/${id}`}
+        />
         <div className="section-padding pt-24 min-h-screen">
           <div className="container-custom text-center">
             <h1 className="text-3xl font-bold mb-4">Event Not Found</h1>
@@ -262,10 +264,12 @@ const EventDetails = () => {
 
   return (
     <Layout>
-      <Helmet>
-        <title>{event.title} | AHSAC Events</title>
-        <meta name="description" content={event.description || `Join us for ${event.title}`} />
-      </Helmet>
+      <SEO 
+        title={`${event.title} | AHSAC Events`}
+        description={event.description || `Join us for ${event.title}`}
+        path={`/events/${id}`}
+        image={event.image_url || undefined}
+      />
 
       <div className="section-padding pt-24 min-h-screen">
         <div className="container-custom max-w-4xl">

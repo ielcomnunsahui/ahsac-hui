@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { Helmet } from "react-helmet-async";
+import SEO from "@/components/SEO";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -315,9 +315,12 @@ const EventCheckIn = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Event Check-In | AHSAC Admin</title>
-      </Helmet>
+      <SEO 
+        title="Event Check-In | AHSAC Admin"
+        description="QR code check-in for AHSAC events."
+        path="/admin/check-in"
+        noindex
+      />
       <AdminLayout>
         <div className="space-y-6">
           <div>

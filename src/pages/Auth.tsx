@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Helmet } from "react-helmet-async";
+import SEO from "@/components/SEO";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -98,9 +98,12 @@ const Auth = () => {
 
   return (
     <>
-      <Helmet>
-        <title>{isLogin ? "Admin Login" : "Admin Sign Up"} | AHSAC</title>
-      </Helmet>
+      <SEO 
+        title={`${isLogin ? "Admin Login" : "Admin Sign Up"} | AHSAC`}
+        description="Access the AHSAC admin panel to manage members, events, and organization settings."
+        path="/auth"
+        noindex
+      />
       <Layout>
         <section className="section-padding min-h-[70vh] flex items-center justify-center bg-gradient-to-b from-secondary/50 to-background">
           <motion.div

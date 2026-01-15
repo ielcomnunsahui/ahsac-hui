@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { Helmet } from "react-helmet-async";
+import SEO from "@/components/SEO";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -309,9 +309,12 @@ const FoundingMembers = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Founding Members | AHSAC Admin</title>
-      </Helmet>
+      <SEO 
+        title="Founding Members | AHSAC Admin"
+        description="Manage founding members displayed on the website."
+        path="/admin/founding-members"
+        noindex
+      />
       <AdminLayout>
         <div className="space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">

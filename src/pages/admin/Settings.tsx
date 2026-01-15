@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Helmet } from "react-helmet-async";
+import SEO from "@/components/SEO";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -118,9 +118,12 @@ const Settings = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Settings | AHSAC Admin</title>
-      </Helmet>
+      <SEO 
+        title="Settings | AHSAC Admin"
+        description="Manage AHSAC organization settings."
+        path="/admin/settings"
+        noindex
+      />
       <AdminLayout>
         <div className="space-y-6 max-w-4xl">
           <div className="flex items-center justify-between">

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Helmet } from "react-helmet-async";
+import SEO from "@/components/SEO";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -110,9 +110,12 @@ const FeedbackAdmin = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Feedback | AHSAC Admin</title>
-      </Helmet>
+      <SEO 
+        title="Feedback | AHSAC Admin"
+        description="Manage user feedback and testimonials."
+        path="/admin/feedback"
+        noindex
+      />
       <AdminLayout>
         <div className="space-y-6">
           <div>
