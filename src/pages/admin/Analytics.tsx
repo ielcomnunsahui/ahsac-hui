@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Helmet } from "react-helmet-async";
+import SEO from "@/components/SEO";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
@@ -231,9 +231,12 @@ const Analytics = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Analytics | AHSAC Admin</title>
-      </Helmet>
+      <SEO 
+        title="Analytics | AHSAC Admin"
+        description="AHSAC membership analytics and statistics."
+        path="/admin/analytics"
+        noindex
+      />
       <AdminLayout>
         <div className="space-y-6">
           <div>

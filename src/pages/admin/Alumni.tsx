@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Helmet } from "react-helmet-async";
+import SEO from "@/components/SEO";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
@@ -169,9 +169,12 @@ const Alumni = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Alumni | AHSAC Admin</title>
-      </Helmet>
+      <SEO 
+        title="Alumni | AHSAC Admin"
+        description="Manage AHSAC alumni records."
+        path="/admin/alumni"
+        noindex
+      />
       <AdminLayout>
         <div className="space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">

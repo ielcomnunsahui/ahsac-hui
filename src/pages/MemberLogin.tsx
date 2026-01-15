@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Helmet } from "react-helmet-async";
+import SEO from "@/components/SEO";
 import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -60,9 +60,11 @@ const MemberLogin = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Member Login | AHSAC</title>
-      </Helmet>
+      <SEO 
+        title="Member Login | AHSAC"
+        description="Log in to your AHSAC member account to access your dashboard and member benefits."
+        path="/member-login"
+      />
       <Layout>
         <section className="section-padding min-h-[70vh] flex items-center justify-center bg-gradient-to-b from-secondary/50 to-background">
           <motion.div

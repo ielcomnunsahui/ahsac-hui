@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Helmet } from "react-helmet-async";
+import SEO from "@/components/SEO";
 import { motion } from "framer-motion";
 import { useNavigate, Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
@@ -211,9 +211,12 @@ const MemberDashboard = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Member Dashboard | AHSAC</title>
-      </Helmet>
+      <SEO 
+        title="Member Dashboard | AHSAC"
+        description="Access your AHSAC member dashboard to view your profile, events, and more."
+        path="/member-dashboard"
+        noindex
+      />
       <Layout>
         <section className="section-padding bg-gradient-to-b from-secondary/50 to-background min-h-screen">
           <div className="container-custom max-w-4xl">

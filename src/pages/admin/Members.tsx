@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Helmet } from "react-helmet-async";
+import SEO from "@/components/SEO";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -497,9 +497,12 @@ END:VCARD`;
 
   return (
     <>
-      <Helmet>
-        <title>Members | AHSAC Admin</title>
-      </Helmet>
+      <SEO 
+        title="Members | AHSAC Admin"
+        description="Manage AHSAC registered members."
+        path="/admin/members"
+        noindex
+      />
       <AdminLayout>
         <div className="space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Helmet } from "react-helmet-async";
+import SEO from "@/components/SEO";
 import { motion } from "framer-motion";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -84,9 +84,12 @@ const Dashboard = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Admin Dashboard | AHSAC</title>
-      </Helmet>
+      <SEO 
+        title="Admin Dashboard | AHSAC"
+        description="AHSAC admin dashboard for managing members, events, and organization settings."
+        path="/admin"
+        noindex
+      />
       <AdminLayout>
         <div className="space-y-8">
           <div>
