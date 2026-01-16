@@ -10,6 +10,11 @@ interface EventData {
   url: string;
 }
 
+interface BreadcrumbItem {
+  name: string;
+  url: string;
+}
+
 interface SEOProps {
   title: string;
   description: string;
@@ -19,6 +24,7 @@ interface SEOProps {
   type?: "website" | "article";
   noindex?: boolean;
   event?: EventData;
+  breadcrumbs?: BreadcrumbItem[];
 }
 
 const SITE_URL = "https://ahsachui.org";
@@ -95,6 +101,18 @@ const generateEventSchema = (event: EventData) => ({
   "url": event.url
 });
 
+// Generate breadcrumb JSON-LD
+const generateBreadcrumbSchema = (breadcrumbs: BreadcrumbItem[]) => ({
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": breadcrumbs.map((item, index) => ({
+    "@type": "ListItem",
+    "position": index + 1,
+    "name": item.name,
+    "item": item.url.startsWith("http") ? item.url : `${SITE_URL}${item.url}`
+  }))
+});
+
 export const SEO = ({
   title,
   description,
@@ -104,6 +122,7 @@ export const SEO = ({
   type = "website",
   noindex = false,
   event,
+  breadcrumbs,
 }: SEOProps) => {
   const fullUrl = `${SITE_URL}${path}`;
   const imageUrl = image.startsWith("http") ? image : `${SITE_URL}${image}`;
@@ -112,6 +131,9 @@ export const SEO = ({
   const schemas: object[] = [organizationSchema];
   if (event) {
     schemas.push(generateEventSchema(event));
+  }
+  if (breadcrumbs && breadcrumbs.length > 0) {
+    schemas.push(generateBreadcrumbSchema(breadcrumbs));
   }
 
   return (
