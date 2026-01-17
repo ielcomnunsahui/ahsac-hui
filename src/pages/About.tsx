@@ -4,7 +4,8 @@ import { Layout } from "@/components/layout/Layout";
 import { Target, Eye, Users, BookOpen, Megaphone, Heart, Loader2, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import asacLogo from "@/assets/asac-logo.jpg";
-import { SEO } from "@/components/SEO";
+import { SEO, BreadcrumbItem } from "@/components/SEO";
+import { Breadcrumb } from "@/components/Breadcrumb";
 
 interface FoundingMember {
   id: string;
@@ -77,6 +78,18 @@ const About = () => {
     );
   }
 
+  const breadcrumbs: BreadcrumbItem[] = [
+    { name: "Home", url: "/" },
+    { name: "About", url: "/about" }
+  ];
+
+  const faqItems = [
+    { question: "What is AHSAC?", answer: "AHSAC (Al-Hikmah University SDG Advocacy Club) is a student-led organization dedicated to promoting and implementing the United Nations Sustainable Development Goals at Al-Hikmah University." },
+    { question: "How can I join AHSAC?", answer: "You can join AHSAC by registering through our membership registration page. All Al-Hikmah University students are welcome to become members." },
+    { question: "What are the Sustainable Development Goals?", answer: "The Sustainable Development Goals (SDGs) are 17 global goals adopted by the United Nations in 2015 as a universal call to action to end poverty, protect the planet, and ensure prosperity for all by 2030." },
+    { question: "What activities does AHSAC organize?", answer: "AHSAC organizes awareness campaigns, workshops, community outreach programs, educational seminars, and various events focused on promoting the 17 SDGs within the university and local community." }
+  ];
+
   return (
     <>
       <SEO
@@ -84,11 +97,14 @@ const About = () => {
         description="Learn about AHSAC's mission to champion the UN Sustainable Development Goals at Al-Hikmah University. Discover our vision, objectives, and founding members."
         keywords="About AHSAC, AHSAC Mission, AHSAC Vision, SDG Advocacy, Al-Hikmah University, Sustainable Development, Founding Members"
         path="/about"
+        breadcrumbs={breadcrumbs}
+        faq={faqItems}
       />
       <Layout>
         {/* Hero */}
         <section className="section-padding bg-gradient-to-b from-secondary/50 to-background">
           <div className="container-custom">
+            <Breadcrumb items={breadcrumbs} className="mb-6" />
             <div className="grid lg:grid-cols-2 gap-12 items-center">
               <motion.div
                 initial={{ opacity: 0, x: -30 }}

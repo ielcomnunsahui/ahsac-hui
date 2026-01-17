@@ -5,7 +5,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { SEO } from "@/components/SEO";
+import { SEO, BreadcrumbItem } from "@/components/SEO";
+import { Breadcrumb } from "@/components/Breadcrumb";
 
 interface FoundingMember {
   id: string;
@@ -40,6 +41,11 @@ const Team = () => {
     );
   }
 
+  const breadcrumbs: BreadcrumbItem[] = [
+    { name: "Home", url: "/" },
+    { name: "Team", url: "/team" }
+  ];
+
   return (
     <Layout>
       <SEO
@@ -47,10 +53,13 @@ const Team = () => {
         description="Get to know the dedicated team behind AHSAC. Meet our passionate students working towards sustainable development goals at Al-Hikmah University."
         keywords="AHSAC Team, SDG Advocacy Club Team, Sustainability Team, Al-Hikmah University Students, SDG Leaders, Environmental Advocates"
         path="/team"
+        breadcrumbs={breadcrumbs}
       />
 
       <div className="section-padding pt-24 min-h-screen">
         <div className="container-custom">
+          <Breadcrumb items={breadcrumbs} className="mb-6" />
+
           {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}

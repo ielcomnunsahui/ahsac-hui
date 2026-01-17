@@ -15,7 +15,8 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { downloadICSFile } from "@/lib/calendar";
-import { SEO } from "@/components/SEO";
+import { SEO, BreadcrumbItem } from "@/components/SEO";
+import { Breadcrumb } from "@/components/Breadcrumb";
 
 interface Event {
   id: string;
@@ -334,6 +335,11 @@ const Events = () => {
     queryClient.invalidateQueries({ queryKey: ['public-events'] });
   };
 
+  const breadcrumbs: BreadcrumbItem[] = [
+    { name: "Home", url: "/" },
+    { name: "Events", url: "/events" }
+  ];
+
   return (
     <Layout>
       <SEO
@@ -341,10 +347,13 @@ const Events = () => {
         description="Discover and register for upcoming AHSAC events. Join us in advocating for the UN Sustainable Development Goals at Al-Hikmah University."
         keywords="AHSAC Events, SDG Events, Sustainable Development Events, Al-Hikmah University Events, SDG Advocacy"
         path="/events"
+        breadcrumbs={breadcrumbs}
       />
 
       <div className="section-padding pt-24 min-h-screen">
         <div className="container-custom">
+          <Breadcrumb items={breadcrumbs} className="mb-6" />
+
           {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}

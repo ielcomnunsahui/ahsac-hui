@@ -10,9 +10,14 @@ interface EventData {
   url: string;
 }
 
-interface BreadcrumbItem {
+export interface BreadcrumbItem {
   name: string;
   url: string;
+}
+
+interface FAQItem {
+  question: string;
+  answer: string;
 }
 
 interface SEOProps {
@@ -25,6 +30,7 @@ interface SEOProps {
   noindex?: boolean;
   event?: EventData;
   breadcrumbs?: BreadcrumbItem[];
+  faq?: FAQItem[];
 }
 
 const SITE_URL = "https://ahsachui.org";
@@ -113,6 +119,20 @@ const generateBreadcrumbSchema = (breadcrumbs: BreadcrumbItem[]) => ({
   }))
 });
 
+// Generate FAQ JSON-LD
+const generateFAQSchema = (faq: FAQItem[]) => ({
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faq.map((item) => ({
+    "@type": "Question",
+    "name": item.question,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": item.answer
+    }
+  }))
+});
+
 export const SEO = ({
   title,
   description,
@@ -123,6 +143,7 @@ export const SEO = ({
   noindex = false,
   event,
   breadcrumbs,
+  faq,
 }: SEOProps) => {
   const fullUrl = `${SITE_URL}${path}`;
   const imageUrl = image.startsWith("http") ? image : `${SITE_URL}${image}`;
@@ -134,6 +155,9 @@ export const SEO = ({
   }
   if (breadcrumbs && breadcrumbs.length > 0) {
     schemas.push(generateBreadcrumbSchema(breadcrumbs));
+  }
+  if (faq && faq.length > 0) {
+    schemas.push(generateFAQSchema(faq));
   }
 
   return (
