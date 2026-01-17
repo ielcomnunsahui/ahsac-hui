@@ -2,7 +2,8 @@ import { motion } from "framer-motion";
 import { Layout } from "@/components/layout/Layout";
 import { ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { SEO } from "@/components/SEO";
+import { SEO, BreadcrumbItem } from "@/components/SEO";
+import { Breadcrumb } from "@/components/Breadcrumb";
 
 const sdgGoals = [
   { number: 1, name: "No Poverty", color: "#E5243B", description: "End poverty in all its forms everywhere.", icon: "https://sdgs.un.org/sites/default/files/goals/E_SDG_Icons-01.jpg" },
@@ -24,6 +25,19 @@ const sdgGoals = [
   { number: 17, name: "Partnerships for the Goals", color: "#19486A", description: "Strengthen global partnerships for sustainable development.", icon: "https://sdgs.un.org/sites/default/files/goals/E_SDG_Icons-17.jpg" },
 ];
 
+const breadcrumbs: BreadcrumbItem[] = [
+  { name: "Home", url: "/" },
+  { name: "SDGs", url: "/sdgs" }
+];
+
+const faqItems = [
+  { question: "What are the Sustainable Development Goals (SDGs)?", answer: "The SDGs are 17 interconnected global goals adopted by the United Nations in 2015 as part of the 2030 Agenda for Sustainable Development. They address global challenges including poverty, inequality, climate change, environmental degradation, peace, and justice." },
+  { question: "When were the SDGs adopted?", answer: "The SDGs were adopted by all United Nations Member States in September 2015 as part of the 2030 Agenda for Sustainable Development, providing a shared blueprint for peace and prosperity for people and the planet." },
+  { question: "How many SDGs are there?", answer: "There are 17 Sustainable Development Goals, each with specific targets to be achieved by 2030. Together they have 169 targets covering social, economic, and environmental sustainability." },
+  { question: "How does AHSAC promote the SDGs?", answer: "AHSAC promotes the SDGs through awareness campaigns, educational workshops, community outreach programs, sustainability initiatives, and collaborative projects that align with one or more of the 17 goals." },
+  { question: "Can individuals contribute to achieving the SDGs?", answer: "Yes! Individuals can contribute by making sustainable choices, raising awareness, volunteering, supporting responsible businesses, reducing waste, conserving resources, and advocating for policies that support sustainable development." }
+];
+
 const SDGs = () => {
   return (
     <>
@@ -32,11 +46,14 @@ const SDGs = () => {
         description="Explore the 17 United Nations Sustainable Development Goals. Learn how AHSAC advocates for each goal at Al-Hikmah University."
         keywords="17 SDGs, Sustainable Development Goals, UN 2030 Agenda, AHSAC SDG Advocacy, Climate Action, No Poverty, Zero Hunger"
         path="/sdgs"
+        breadcrumbs={breadcrumbs}
+        faq={faqItems}
       />
       <Layout>
         {/* Hero */}
         <section className="section-padding bg-gradient-to-b from-primary/5 to-background">
           <div className="container-custom text-center">
+            <Breadcrumb items={breadcrumbs} className="mb-6 justify-center" />
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}

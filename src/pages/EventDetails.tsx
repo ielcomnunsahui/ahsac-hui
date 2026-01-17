@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import SEO from "@/components/SEO";
+import SEO, { BreadcrumbItem } from "@/components/SEO";
+import { Breadcrumb } from "@/components/Breadcrumb";
 import { motion } from "framer-motion";
 import { format, isPast } from "date-fns";
 import { 
@@ -262,6 +263,12 @@ const EventDetails = () => {
   const spotsLeft = event.max_attendees ? event.max_attendees - (registrationCount || 0) : null;
   const isFull = spotsLeft !== null && spotsLeft <= 0;
 
+  const breadcrumbs: BreadcrumbItem[] = [
+    { name: "Home", url: "/" },
+    { name: "Events", url: "/events" },
+    { name: event.title, url: `/events/${id}` }
+  ];
+
   return (
     <Layout>
       <SEO 
@@ -269,6 +276,7 @@ const EventDetails = () => {
         description={event.description || `Join us for ${event.title}`}
         path={`/events/${id}`}
         image={event.image_url || undefined}
+        breadcrumbs={breadcrumbs}
         event={{
           name: event.title,
           description: event.description || undefined,
@@ -282,14 +290,8 @@ const EventDetails = () => {
 
       <div className="section-padding pt-24 min-h-screen">
         <div className="container-custom max-w-4xl">
-          {/* Back Link */}
-          <Link 
-            to="/events" 
-            className="inline-flex items-center text-muted-foreground hover:text-foreground mb-6 transition-colors"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Events
-          </Link>
+          {/* Breadcrumb Navigation */}
+          <Breadcrumb items={breadcrumbs} className="mb-6" />
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
