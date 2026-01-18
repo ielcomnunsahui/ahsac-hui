@@ -166,7 +166,7 @@ const Settings = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label>About ASAC</Label>
+                <Label>About AHSAC</Label>
                 <Textarea
                   value={settings.about || ''}
                   onChange={(e) => setSettings({ ...settings, about: e.target.value })}
