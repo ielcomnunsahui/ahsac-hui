@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import SEO from "@/components/SEO";
+import { Breadcrumb } from "@/components/Breadcrumb";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { Button } from "@/components/ui/button";
@@ -113,22 +114,43 @@ const AcademicStructure = () => {
 
   const isLoading = loadingColleges || loadingFaculties || loadingDepartments;
 
-  // Build hierarchy
-  const standaloneFaculties = faculties.filter(f => !f.college_id);
-  const collegesWithFaculties = colleges.map(college => ({
-    ...college,
-    faculties: faculties
-      .filter(f => f.college_id === college.id)
-      .map(faculty => ({
-        ...faculty,
-        departments: departments.filter(d => d.faculty_id === faculty.id),
-      })),
-  }));
+  // Build hierarchy with alphabetical sorting
+  const standaloneFaculties = useMemo(() => 
+    faculties.filter(f => !f.college_id).sort((a, b) => a.name.localeCompare(b.name)),
+    [faculties]
+  );
 
-  const standaloneFacultiesWithDepartments = standaloneFaculties.map(faculty => ({
-    ...faculty,
-    departments: departments.filter(d => d.faculty_id === faculty.id),
-  }));
+  const collegesWithFaculties = useMemo(() => 
+    colleges.map(college => ({
+      ...college,
+      faculties: faculties
+        .filter(f => f.college_id === college.id)
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .map(faculty => ({
+          ...faculty,
+          departments: departments
+            .filter(d => d.faculty_id === faculty.id)
+            .sort((a, b) => a.name.localeCompare(b.name)),
+        })),
+    })).sort((a, b) => a.name.localeCompare(b.name)),
+    [colleges, faculties, departments]
+  );
+
+  const standaloneFacultiesWithDepartments = useMemo(() => 
+    standaloneFaculties.map(faculty => ({
+      ...faculty,
+      departments: departments
+        .filter(d => d.faculty_id === faculty.id)
+        .sort((a, b) => a.name.localeCompare(b.name)),
+    })),
+    [standaloneFaculties, departments]
+  );
+
+  const breadcrumbItems = [
+    { name: "Home", url: "/" },
+    { name: "Admin", url: "/admin" },
+    { name: "Academic Structure", url: "/admin/academic-structure" },
+  ];
 
   // College mutations
   const addCollegeMutation = useMutation({
@@ -464,6 +486,7 @@ const AcademicStructure = () => {
       />
       <AdminLayout>
         <div className="space-y-6">
+          <Breadcrumb items={breadcrumbItems} className="mb-2" />
           <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
             <div>
               <h1 className="text-3xl font-display font-bold">Academic Structure</h1>
