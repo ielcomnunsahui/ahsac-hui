@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Layout } from "@/components/layout/Layout";
-import { Users, Award, Mail, Linkedin, Twitter } from "lucide-react";
+import { Users, Award, Mail, Linkedin, Twitter, Facebook, Globe } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
@@ -15,6 +15,11 @@ interface FoundingMember {
   image_url: string | null;
   bio: string | null;
   display_order: number;
+  twitter_handle: string | null;
+  linkedin_url: string | null;
+  facebook_url: string | null;
+  email: string | null;
+  website_url: string | null;
 }
 
 const Team = () => {
@@ -165,33 +170,64 @@ const Team = () => {
                         </p>
                       </div>
                       
-                      <div className="flex gap-2 pt-2 justify-center">
-                        <a 
-                          href={`mailto:${member.name.replace(/\s+/g, '.').toLowerCase()}@ahsachui.org`}
-                          className="p-2 rounded-md bg-muted hover:bg-muted/80 transition-colors"
-                          title="Email"
-                        >
-                          <Mail className="h-4 w-4" />
-                        </a>
-                        <a 
-                          href={`https://linkedin.com/in/${member.name.replace(/\s+/g, '-').toLowerCase()}`}
-                          className="p-2 rounded-md bg-muted hover:bg-muted/80 transition-colors"
-                          title="LinkedIn"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <Linkedin className="h-4 w-4" />
-                        </a>
-                        <a 
-                          href={`https://twitter.com/${member.name.replace(/\s+/g, '_').toLowerCase()}`}
-                          className="p-2 rounded-md bg-muted hover:bg-muted/80 transition-colors"
-                          title="Twitter"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          <Twitter className="h-4 w-4" />
-                        </a>
-                      </div>
+                      {/* Social Media Links - Only show if at least one is available */}
+                      {(member.email || member.twitter_handle || member.linkedin_url || member.facebook_url || member.website_url) && (
+                        <div className="flex gap-2 pt-2 justify-center flex-wrap">
+                          {member.email && (
+                            <a 
+                              href={`mailto:${member.email}`}
+                              className="p-2 rounded-md bg-muted hover:bg-muted/80 transition-colors"
+                              title="Email"
+                            >
+                              <Mail className="h-4 w-4" />
+                            </a>
+                          )}
+                          {member.twitter_handle && (
+                            <a 
+                              href={`https://x.com/${member.twitter_handle.replace('@', '')}`}
+                              className="p-2 rounded-md bg-muted hover:bg-muted/80 transition-colors"
+                              title="X (Twitter)"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <Twitter className="h-4 w-4" />
+                            </a>
+                          )}
+                          {member.linkedin_url && (
+                            <a 
+                              href={member.linkedin_url}
+                              className="p-2 rounded-md bg-muted hover:bg-muted/80 transition-colors"
+                              title="LinkedIn"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <Linkedin className="h-4 w-4" />
+                            </a>
+                          )}
+                          {member.facebook_url && (
+                            <a 
+                              href={member.facebook_url}
+                              className="p-2 rounded-md bg-muted hover:bg-muted/80 transition-colors"
+                              title="Facebook"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <Facebook className="h-4 w-4" />
+                            </a>
+                          )}
+                          {member.website_url && (
+                            <a 
+                              href={member.website_url}
+                              className="p-2 rounded-md bg-muted hover:bg-muted/80 transition-colors"
+                              title="Website"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <Globe className="h-4 w-4" />
+                            </a>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>

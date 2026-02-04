@@ -345,31 +345,46 @@ export type Database = {
           bio: string | null
           created_at: string
           display_order: number | null
+          email: string | null
+          facebook_url: string | null
           id: string
           image_url: string | null
+          linkedin_url: string | null
           name: string
           role: string
+          twitter_handle: string | null
           updated_at: string
+          website_url: string | null
         }
         Insert: {
           bio?: string | null
           created_at?: string
           display_order?: number | null
+          email?: string | null
+          facebook_url?: string | null
           id?: string
           image_url?: string | null
+          linkedin_url?: string | null
           name: string
           role: string
+          twitter_handle?: string | null
           updated_at?: string
+          website_url?: string | null
         }
         Update: {
           bio?: string | null
           created_at?: string
           display_order?: number | null
+          email?: string | null
+          facebook_url?: string | null
           id?: string
           image_url?: string | null
+          linkedin_url?: string | null
           name?: string
           role?: string
+          twitter_handle?: string | null
           updated_at?: string
+          website_url?: string | null
         }
         Relationships: []
       }

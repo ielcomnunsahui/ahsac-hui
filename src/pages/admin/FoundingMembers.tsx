@@ -19,7 +19,7 @@ import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { ImageUpload } from "@/components/admin/ImageUpload";
-import { Plus, Edit, Trash2, Loader2, User, Instagram, Twitter, Linkedin, Globe } from "lucide-react";
+import { Plus, Edit, Trash2, Loader2, User, Twitter, Linkedin, Facebook, Globe, Mail } from "lucide-react";
 
 interface FoundingMember {
   id: string;
@@ -28,6 +28,11 @@ interface FoundingMember {
   image_url: string | null;
   bio: string | null;
   display_order: number;
+  twitter_handle: string | null;
+  linkedin_url: string | null;
+  facebook_url: string | null;
+  email: string | null;
+  website_url: string | null;
 }
 
 interface MemberFormData {
@@ -36,6 +41,11 @@ interface MemberFormData {
   image_url: string;
   bio: string;
   display_order: number;
+  twitter_handle: string;
+  linkedin_url: string;
+  facebook_url: string;
+  email: string;
+  website_url: string;
 }
 
 const emptyMember: MemberFormData = {
@@ -44,6 +54,11 @@ const emptyMember: MemberFormData = {
   image_url: '',
   bio: '',
   display_order: 0,
+  twitter_handle: '',
+  linkedin_url: '',
+  facebook_url: '',
+  email: '',
+  website_url: '',
 };
 
 const ROLE_SUGGESTIONS = [
@@ -110,6 +125,11 @@ const FoundingMembers = () => {
           image_url: formData.image_url || null,
           bio: formData.bio || null,
           display_order: formData.display_order,
+          twitter_handle: formData.twitter_handle || null,
+          linkedin_url: formData.linkedin_url || null,
+          facebook_url: formData.facebook_url || null,
+          email: formData.email || null,
+          website_url: formData.website_url || null,
         });
 
       if (error) throw error;
@@ -138,6 +158,11 @@ const FoundingMembers = () => {
           image_url: formData.image_url || null,
           bio: formData.bio || null,
           display_order: formData.display_order,
+          twitter_handle: formData.twitter_handle || null,
+          linkedin_url: formData.linkedin_url || null,
+          facebook_url: formData.facebook_url || null,
+          email: formData.email || null,
+          website_url: formData.website_url || null,
         })
         .eq('id', editingId);
 
@@ -177,6 +202,11 @@ const FoundingMembers = () => {
       image_url: member.image_url || '',
       bio: member.bio || '',
       display_order: member.display_order,
+      twitter_handle: member.twitter_handle || '',
+      linkedin_url: member.linkedin_url || '',
+      facebook_url: member.facebook_url || '',
+      email: member.email || '',
+      website_url: member.website_url || '',
     });
     setIsEditDialogOpen(true);
   };
@@ -285,6 +315,101 @@ const FoundingMembers = () => {
             <p className="text-xs text-muted-foreground">
               {formData.bio.length}/500 characters
             </p>
+          </div>
+        </div>
+
+        <Separator />
+
+        {/* Social Media Links */}
+        <div className="space-y-4">
+          <h4 className="font-medium text-sm text-muted-foreground uppercase tracking-wide">
+            Social Media & Contact
+          </h4>
+          
+          <div className="space-y-2">
+            <Label htmlFor={`email-${isEdit ? 'edit' : 'add'}`} className="flex items-center gap-2">
+              <Mail className="h-4 w-4" /> Email
+            </Label>
+            <Input
+              id={`email-${isEdit ? 'edit' : 'add'}`}
+              type="email"
+              value={formData.email}
+              onChange={(e) => {
+                e.stopPropagation();
+                handleInputChange('email', e.target.value);
+              }}
+              onKeyDown={(e) => e.stopPropagation()}
+              onPointerDown={(e) => e.stopPropagation()}
+              placeholder="member@example.com"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor={`twitter-${isEdit ? 'edit' : 'add'}`} className="flex items-center gap-2">
+              <Twitter className="h-4 w-4" /> X (Twitter) Handle
+            </Label>
+            <Input
+              id={`twitter-${isEdit ? 'edit' : 'add'}`}
+              value={formData.twitter_handle}
+              onChange={(e) => {
+                e.stopPropagation();
+                handleInputChange('twitter_handle', e.target.value);
+              }}
+              onKeyDown={(e) => e.stopPropagation()}
+              onPointerDown={(e) => e.stopPropagation()}
+              placeholder="@username"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor={`linkedin-${isEdit ? 'edit' : 'add'}`} className="flex items-center gap-2">
+              <Linkedin className="h-4 w-4" /> LinkedIn URL
+            </Label>
+            <Input
+              id={`linkedin-${isEdit ? 'edit' : 'add'}`}
+              value={formData.linkedin_url}
+              onChange={(e) => {
+                e.stopPropagation();
+                handleInputChange('linkedin_url', e.target.value);
+              }}
+              onKeyDown={(e) => e.stopPropagation()}
+              onPointerDown={(e) => e.stopPropagation()}
+              placeholder="https://linkedin.com/in/username"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor={`facebook-${isEdit ? 'edit' : 'add'}`} className="flex items-center gap-2">
+              <Facebook className="h-4 w-4" /> Facebook URL
+            </Label>
+            <Input
+              id={`facebook-${isEdit ? 'edit' : 'add'}`}
+              value={formData.facebook_url}
+              onChange={(e) => {
+                e.stopPropagation();
+                handleInputChange('facebook_url', e.target.value);
+              }}
+              onKeyDown={(e) => e.stopPropagation()}
+              onPointerDown={(e) => e.stopPropagation()}
+              placeholder="https://facebook.com/username"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor={`website-${isEdit ? 'edit' : 'add'}`} className="flex items-center gap-2">
+              <Globe className="h-4 w-4" /> Website
+            </Label>
+            <Input
+              id={`website-${isEdit ? 'edit' : 'add'}`}
+              value={formData.website_url}
+              onChange={(e) => {
+                e.stopPropagation();
+                handleInputChange('website_url', e.target.value);
+              }}
+              onKeyDown={(e) => e.stopPropagation()}
+              onPointerDown={(e) => e.stopPropagation()}
+              placeholder="https://example.com"
+            />
           </div>
         </div>
 
