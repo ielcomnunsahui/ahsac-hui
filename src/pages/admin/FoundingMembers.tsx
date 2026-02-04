@@ -181,9 +181,9 @@ const FoundingMembers = () => {
     setIsEditDialogOpen(true);
   };
 
-  const MemberFormContent = ({ isEdit }: { isEdit: boolean }) => (
+  const renderFormContent = (isEdit: boolean) => (
     <ScrollArea className="max-h-[70vh]">
-      <div className="space-y-6 p-1">
+      <div className="space-y-6 p-1" onClick={(e) => e.stopPropagation()}>
         {/* Profile Photo Section */}
         <div className="flex flex-col items-center">
           <ImageUpload
@@ -206,25 +206,35 @@ const FoundingMembers = () => {
           </h4>
           
           <div className="space-y-2">
-            <Label htmlFor="name">Full Name *</Label>
+            <Label htmlFor={`name-${isEdit ? 'edit' : 'add'}`}>Full Name *</Label>
             <Input
-              id="name"
+              id={`name-${isEdit ? 'edit' : 'add'}`}
               value={formData.name}
-              onChange={(e) => handleInputChange('name', e.target.value)}
+              onChange={(e) => {
+                e.stopPropagation();
+                handleInputChange('name', e.target.value);
+              }}
+              onKeyDown={(e) => e.stopPropagation()}
+              onPointerDown={(e) => e.stopPropagation()}
               placeholder="e.g., John Doe"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="role">Role / Position *</Label>
+            <Label htmlFor={`role-${isEdit ? 'edit' : 'add'}`}>Role / Position *</Label>
             <Input
-              id="role"
+              id={`role-${isEdit ? 'edit' : 'add'}`}
               value={formData.role}
-              onChange={(e) => handleInputChange('role', e.target.value)}
+              onChange={(e) => {
+                e.stopPropagation();
+                handleInputChange('role', e.target.value);
+              }}
+              onKeyDown={(e) => e.stopPropagation()}
+              onPointerDown={(e) => e.stopPropagation()}
               placeholder="e.g., President"
-              list="role-suggestions"
+              list={`role-suggestions-${isEdit ? 'edit' : 'add'}`}
             />
-            <datalist id="role-suggestions">
+            <datalist id={`role-suggestions-${isEdit ? 'edit' : 'add'}`}>
               {ROLE_SUGGESTIONS.map((role) => (
                 <option key={role} value={role} />
               ))}
@@ -237,7 +247,10 @@ const FoundingMembers = () => {
                   variant="outline"
                   size="sm"
                   className="text-xs h-6"
-                  onClick={() => handleInputChange('role', role)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleInputChange('role', role);
+                  }}
                 >
                   {role}
                 </Button>
@@ -255,11 +268,16 @@ const FoundingMembers = () => {
           </h4>
           
           <div className="space-y-2">
-            <Label htmlFor="bio">About (Optional)</Label>
+            <Label htmlFor={`bio-${isEdit ? 'edit' : 'add'}`}>About (Optional)</Label>
             <Textarea
-              id="bio"
+              id={`bio-${isEdit ? 'edit' : 'add'}`}
               value={formData.bio}
-              onChange={(e) => handleInputChange('bio', e.target.value)}
+              onChange={(e) => {
+                e.stopPropagation();
+                handleInputChange('bio', e.target.value);
+              }}
+              onKeyDown={(e) => e.stopPropagation()}
+              onPointerDown={(e) => e.stopPropagation()}
               placeholder="Write a short bio about this member. Include their achievements, interests, or contributions to AHSAC..."
               rows={4}
               className="resize-none"
@@ -279,12 +297,17 @@ const FoundingMembers = () => {
           </h4>
           
           <div className="space-y-2">
-            <Label htmlFor="display_order">Display Order</Label>
+            <Label htmlFor={`display_order-${isEdit ? 'edit' : 'add'}`}>Display Order</Label>
             <Input
-              id="display_order"
+              id={`display_order-${isEdit ? 'edit' : 'add'}`}
               type="number"
               value={formData.display_order}
-              onChange={(e) => handleInputChange('display_order', parseInt(e.target.value) || 0)}
+              onChange={(e) => {
+                e.stopPropagation();
+                handleInputChange('display_order', parseInt(e.target.value) || 0);
+              }}
+              onKeyDown={(e) => e.stopPropagation()}
+              onPointerDown={(e) => e.stopPropagation()}
               min={0}
             />
             <p className="text-xs text-muted-foreground">
@@ -295,7 +318,10 @@ const FoundingMembers = () => {
 
         {/* Submit Button */}
         <Button 
-          onClick={isEdit ? handleUpdate : handleAdd} 
+          onClick={(e) => {
+            e.stopPropagation();
+            isEdit ? handleUpdate() : handleAdd();
+          }} 
           className="w-full" 
           disabled={isSaving || !formData.name.trim() || !formData.role.trim()}
           size="lg"
@@ -339,7 +365,7 @@ const FoundingMembers = () => {
                     Add a new founding member to showcase on the website's team section.
                   </DialogDescription>
                 </DialogHeader>
-                <MemberFormContent isEdit={false} />
+                {renderFormContent(false)}
               </DialogContent>
             </Dialog>
           </div>
@@ -433,7 +459,7 @@ const FoundingMembers = () => {
                   Update the details for this founding member.
                 </DialogDescription>
               </DialogHeader>
-              <MemberFormContent isEdit={true} />
+              {renderFormContent(true)}
             </DialogContent>
           </Dialog>
         </div>
